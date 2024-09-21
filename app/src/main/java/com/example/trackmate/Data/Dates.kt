@@ -2,60 +2,42 @@ package com.example.trackmate.Data
 
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
-class Dates(){
+class DateUtils(){
+    private val dateFormat = "dd"
+    private val dayFormat = "EEE"
+    private val calendar = Calendar.getInstance()
 
-    val days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+    private fun dateFormatter(pattern: String, dateInLong: Long): String{
+        val dateFormatter = SimpleDateFormat(pattern, Locale.getDefault())
+        return dateFormatter.format(Date(dateInLong))
+    }
 
+    fun createDateList(): ArrayList<Long> {
+        val returnList = ArrayList<Long>()
 
-    private fun createDateList(): List<Map<Int,String>> {
-        val returnList = ArrayList<Map<Int, String>>()
-        val calendar = Calendar.getInstance()
-        val currentDate = calendar.get(Calendar.DAY_OF_MONTH) //day of the month starts from 1
-        val currentDay = calendar.get(Calendar.DAY_OF_WEEK) //day of the week starts from 1
-        val currentMonth = calendar.get(Calendar.MONTH) //month starts from 0
-        val currentYear = calendar.get(Calendar.YEAR)
-
-
-        //condition to check for leap year
-        if(currentYear % 4 == 0){
-
-            if(currentMonth == Calendar.AUGUST){
-
-                //adding the previous month dates
-                for(i in 1..31){
-                    val map = mutableMapOf<Int, String>()
-                    map[i] = days[i-1]
-                    returnList.add(map)
-                }
-
-                //adding the current month dates
-                for(i in currentDate downTo  1){
-                    val map = mutableMapOf<Int, String>()
-                    map[i] = days[i-1]
-                    returnList.add(map)
-                }
-
-                //adding the next month dates
-                for(i in 1..31){
-                    val map = mutableMapOf<Int, String>()
-                    map[i] = days[i-1]
-                    returnList.add(map)
-                }
-
-
-            }else if(currentMonth < Calendar.AUGUST){
-
-            }else{
-
-            }
-
-        }else{
-
+        for(i in 49 downTo 0){
+            returnList.add(calendar.timeInMillis - 24*3600*1000*i)
         }
-
+        for(i in 1..50){
+            returnList.add(calendar.timeInMillis + 24*3600*1000*i)
+        }
 
         return returnList
     }
+
+    fun getDate(date: Long): String{
+        return dateFormatter(pattern = dateFormat, dateInLong = date)
+    }
+
+    fun getDay(date: Long): String{
+        return dateFormatter(pattern = dayFormat, dateInLong = date)
+    }
+
+    fun getCurrentDateInLong(): Long{
+        return calendar.timeInMillis
+    }
+
 }

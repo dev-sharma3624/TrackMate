@@ -29,7 +29,7 @@ fun TopBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.Cyan),
+            .padding(top = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
@@ -49,7 +49,7 @@ fun TopBar(
         Text(
             text = heading,
             modifier = Modifier.padding(16.dp),
-            fontSize = 20.sp,
+            fontSize = if(isBackButtonRequired) 20.sp else 32.sp,
             fontWeight = if(isBackButtonRequired) null else FontWeight.Bold,
             fontFamily = FontFamily.Monospace
         )
@@ -59,9 +59,11 @@ fun TopBar(
             onClick = { /*TODO*/ },
             modifier = Modifier.padding(end = 16.dp, top = 4.dp)
         ) {
-            Icon(imageVector = Icons.Default.AddCircle,
+            Icon(
+                imageVector = Icons.Default.AddCircle,
                 contentDescription = null,
-                tint = Colors.RED
+                tint = Colors.RED,
+                modifier = Modifier.size(30.dp)
             )
         }
 
