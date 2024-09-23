@@ -48,8 +48,7 @@ fun TopBar(
             text = heading,
             modifier = Modifier.padding(16.dp),
             fontSize = if(isBackButtonRequired) 20.sp else 32.sp,
-            fontWeight = if(isBackButtonRequired) null else FontWeight.Bold,
-            fontFamily = FontFamily.Monospace
+            fontWeight = if(isBackButtonRequired) null else FontWeight.Bold
         )
 
 

@@ -37,6 +37,11 @@ fun HomeScreen(
             }
 
             //Habits
+            Column {
+                HabitList(){
+                    //TODO: Add action for onClick of card, i.e., update database isChecked property
+                }
+            }
 
 
         }
