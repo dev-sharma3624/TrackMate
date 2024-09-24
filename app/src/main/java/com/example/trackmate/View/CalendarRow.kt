@@ -1,11 +1,9 @@
 package com.example.trackmate.View
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.trackmate.Data.DateUtils
+import com.example.trackmate.ViewModel.HomeScreenViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -33,17 +30,16 @@ fun CalendarRowPreview(){
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CalendarRow()
+        CalendarRow(HomeScreenViewModel())
     }
 }
 
 
 @Composable
-fun CalendarRow(){
-    val dateUtils = DateUtils()
-    val dateList = dateUtils.createDateList()
-
-    var selectedDate by remember{ mutableLongStateOf(dateUtils.getCurrentDateInLong()) }
+fun CalendarRow(
+    viewModel: HomeScreenViewModel
+){
+    var selectedDate by remember{ mutableLongStateOf(viewModel.currentDate) }
 
     val lazyRowState = rememberLazyListState(
         initialFirstVisibleItemIndex = 47
@@ -52,15 +48,19 @@ fun CalendarRow(){
     LazyRow(
         state = lazyRowState
     ){
-        items(dateList){
+        items(viewModel.dateList){
             DateCard(
-                dateUtils = dateUtils,
                 dateInLong = it,
                 isSelected = selectedDate == it,
-                onClickCard = {
+                onClickDateCard = {
                     date->
                     selectedDate = date
-                }
+                    viewModel.topBarHeadingDecider(it)
+                },
+                getDateString = {dateInLong->
+                    viewModel.getDateInString(dateInLong)
+                },
+                getDayString = {dayInLong-> viewModel.getDayInString(dayInLong) },
             )
         }
     }
@@ -68,10 +68,11 @@ fun CalendarRow(){
 
 @Composable
 fun DateCard(
-    dateUtils: DateUtils,
     dateInLong: Long,
     isSelected: Boolean,
-    onClickCard: (Long)->Unit
+    onClickDateCard: (Long)->Unit,
+    getDateString: (Long) -> String,
+    getDayString: (Long) -> String
 ){
 
     Card(
@@ -79,7 +80,7 @@ fun DateCard(
             .padding(8.dp)
             .size(56.dp),
         onClick = {
-            onClickCard(dateInLong)
+            onClickDateCard(dateInLong)
         },
         colors = CardColors(
             containerColor = if(isSelected) Color.White else Colors.LIGHT_GREY,
@@ -97,12 +98,12 @@ fun DateCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = dateUtils.getDate(dateInLong),
+                text = getDateString(dateInLong),
                 color = if(isSelected) Colors.LIGHT_RED else Color.Unspecified
             )
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
             Text(
-                text = dateUtils.getDay(dateInLong),
+                text = getDayString(dateInLong),
                 color = if(isSelected) Colors.LIGHT_RED else Color.Unspecified
             )
         }

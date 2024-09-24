@@ -6,18 +6,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.trackmate.SCREENS
+import com.example.trackmate.ViewModel.HomeScreenViewModel
+import kotlin.random.Random
 
+@Preview(showBackground = true)
 @Composable
 fun HomeScreen(
-    navController: NavController,
-    screenId: SCREENS
+    navController: NavController = rememberNavController(),
+    screenId: SCREENS = SCREENS.HOME
 ){
 
+    val homeScreenViewModel = HomeScreenViewModel()
+
+    val topBarHeading = remember{ mutableStateOf(homeScreenViewModel.topBarHeading) }
+
     LayoutStructure(
-        topBarHeading = "Today",
+        topBarHeading = topBarHeading.value,
         bottomBar = { BottomBar(navController = navController, screenId = screenId) },
         isBackButtonRequired = false
     ) {padding->
@@ -33,13 +44,13 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                CalendarRow()
+                CalendarRow(homeScreenViewModel)
             }
 
             //Habits
             Column {
-                HabitList(){
-                    //TODO: Add action for onClick of card, i.e., update database isChecked property
+                HabitList(homeScreenViewModel){
+                    //TODO: Navigate to progress screen with the particular activity
                 }
             }
 

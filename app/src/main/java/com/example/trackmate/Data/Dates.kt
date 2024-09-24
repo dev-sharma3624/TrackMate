@@ -8,6 +8,7 @@ import java.util.Locale
 class DateUtils(){
     private val dateFormat = "dd"
     private val dayFormat = "EEE"
+    private val dateMonthFormat = "dd MMM, EEE"
     private val calendar = Calendar.getInstance()
 
     private fun dateFormatter(pattern: String, dateInLong: Long): String{
@@ -34,6 +35,10 @@ class DateUtils(){
 
     fun getDay(date: Long): String{
         return dateFormatter(pattern = dayFormat, dateInLong = date)
+    }
+
+    fun getDateMonthAndDay(day: Long): String{
+        return dateFormatter(pattern = dateMonthFormat, dateInLong = day)
     }
 
     fun getCurrentDateInLong(): Long{
