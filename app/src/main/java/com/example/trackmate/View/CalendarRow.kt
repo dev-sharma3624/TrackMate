@@ -57,10 +57,8 @@ fun CalendarRow(
                     selectedDate = date
                     viewModel.topBarHeadingDecider(it)
                 },
-                getDateString = {dateInLong->
-                    viewModel.getDateInString(dateInLong)
-                },
-                getDayString = {dayInLong-> viewModel.getDayInString(dayInLong) },
+                date = viewModel.getDateInString(it),
+                day = viewModel.getDayInString(it)
             )
         }
     }
@@ -71,8 +69,8 @@ fun DateCard(
     dateInLong: Long,
     isSelected: Boolean,
     onClickDateCard: (Long)->Unit,
-    getDateString: (Long) -> String,
-    getDayString: (Long) -> String
+    date: String,
+    day: String
 ){
 
     Card(
@@ -98,12 +96,12 @@ fun DateCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = getDateString(dateInLong),
+                text = date,
                 color = if(isSelected) Colors.LIGHT_RED else Color.Unspecified
             )
             Spacer(modifier = Modifier.padding(vertical = 2.dp))
             Text(
-                text = getDayString(dateInLong),
+                text = day,
                 color = if(isSelected) Colors.LIGHT_RED else Color.Unspecified
             )
         }

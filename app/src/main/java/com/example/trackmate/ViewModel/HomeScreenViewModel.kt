@@ -12,8 +12,8 @@ class HomeScreenViewModel: ViewModel() {
     private val dateUtils = DateUtils()
     val dateList = dateUtils.createDateList()
 
-    val habitList: Flow<List<Habits>> = getHabitList()
-
+//    val habitList: Flow<List<Habits>> = getHabitList()
+    val habitList = emptyList<Habits>()
     val currentDate = dateUtils.getCurrentDateInLong()
 
 
@@ -36,9 +36,9 @@ class HomeScreenViewModel: ViewModel() {
     }
 
 
-    private fun getHabitList(): Flow<List<Habits>> {
+    /*private fun getHabitList(): Flow<List<Habits>> {
 
-    }
+    }*/
 
     fun updateHabitList(habitId: Int) {
 

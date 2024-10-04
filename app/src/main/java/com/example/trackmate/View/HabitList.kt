@@ -47,10 +47,11 @@ fun HabitList(
     onClickHabitCard: (Int) -> Unit
 ){
 
-    val habitList = viewModel.habitList.collectAsState(initial = emptyList())
+//    val habitList = viewModel.habitList.collectAsState(initial = emptyList())
+    val habitList = viewModel.habitList
 
     LazyColumn {
-        items(habitList.value){
+        /*items(habitList.value){
             HabitItem(
                 habit = it,
                 onClickHabitCard = {habitId-> onClickHabitCard(habitId)},
@@ -58,7 +59,16 @@ fun HabitList(
                     viewModel.updateHabitList(habitId)
                 }
             )
-        }
+        }*/
+        items(habitList){
+        HabitItem(
+            habit = it,
+            onClickHabitCard = {habitId-> onClickHabitCard(habitId)},
+            onClickIconButton = {habitId->
+                viewModel.updateHabitList(habitId)
+            }
+        )
+    }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.trackmate.Data
 
+import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -10,6 +11,7 @@ class DateUtils(){
     private val dayFormat = "EEE"
     private val dateMonthFormat = "dd MMM, EEE"
     private val calendar = Calendar.getInstance()
+    private val currentTimeInMillis = calendar.timeInMillis
 
     private fun dateFormatter(pattern: String, dateInLong: Long): String{
         val dateFormatter = SimpleDateFormat(pattern, Locale.getDefault())
@@ -20,10 +22,16 @@ class DateUtils(){
         val returnList = ArrayList<Long>()
 
         for(i in 49 downTo 0){
-            returnList.add(calendar.timeInMillis - 24*3600*1000*i)
+            returnList.add(currentTimeInMillis - 24L*3600*1000*i)
+            /*Log.d("NAMASTE", "Value of i: $i")
+            Log.d("NAMASTE", "Last added element: ${getDateMonthAndDay(returnList.last())}")
+            Log.d("NAMASTE", "Size of array: ${returnList.size}")*/
         }
         for(i in 1..50){
-            returnList.add(calendar.timeInMillis + 24*3600*1000*i)
+            returnList.add(currentTimeInMillis + 24L*3600*1000*i)
+            /*Log.d("NAMASTE", "Value of i: $i")
+            Log.d("NAMASTE", "Last added element: ${getDateMonthAndDay(returnList.last())}")
+            Log.d("NAMASTE", "Size of array: ${returnList.size}")*/
         }
 
         return returnList
@@ -42,7 +50,7 @@ class DateUtils(){
     }
 
     fun getCurrentDateInLong(): Long{
-        return calendar.timeInMillis
+        return currentTimeInMillis
     }
 
 }
