@@ -1,11 +1,9 @@
 package com.example.trackmate.ViewModel
 
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import com.example.trackmate.Data.DateUtils
-import com.example.trackmate.Data.Habits
-import kotlinx.coroutines.flow.Flow
+import com.example.trackmate.Data.Database.Habit
 
 class HomeScreenViewModel: ViewModel() {
 
@@ -13,7 +11,7 @@ class HomeScreenViewModel: ViewModel() {
     val dateList = dateUtils.createDateList()
 
 //    val habitList: Flow<List<Habits>> = getHabitList()
-    val habitList = emptyList<Habits>()
+    val habitList = emptyList<Habit>()
     val currentDate = dateUtils.getCurrentDateInLong()
 
 

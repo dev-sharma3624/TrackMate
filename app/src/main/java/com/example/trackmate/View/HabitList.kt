@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,9 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackmate.Data.Habits
+import com.example.trackmate.Data.Database.Habit
 import com.example.trackmate.ViewModel.HomeScreenViewModel
-import kotlin.random.Random
 
 @Preview(showBackground = true)
 @Composable
@@ -74,7 +72,7 @@ fun HabitList(
 
 @Composable
 fun HabitItem(
-    habit: Habits,
+    habit: Habit,
     onClickHabitCard: (Int) -> Unit,
     onClickIconButton: (Int) -> Unit
 ){
@@ -116,14 +114,14 @@ fun HabitItem(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = habit.title,
+                    text = habit.habitName,
                     fontWeight = FontWeight.Medium
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                 Text(
-                    text = habit.time,
+                    text = habit.createdOn,
                     fontSize = 12.sp,
                     color = Colors.MODERATE_GREY
                 )
