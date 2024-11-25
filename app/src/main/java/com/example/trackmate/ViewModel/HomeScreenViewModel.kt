@@ -20,8 +20,8 @@ class HomeScreenViewModel: ViewModel() {
 
     fun topBarHeadingDecider(date: Long){
         if(currentDate == date)  _topBarHeading = "Today"
-        else if(date == currentDate + 24*3600*1000) _topBarHeading = "Tomorrow"
-        else if(date == currentDate - 24*3600*1000) _topBarHeading = "Yesterday"
+        else if(date == currentDate + 24*3600*1000L) _topBarHeading = "Tomorrow"
+        else if(date == currentDate - 24*3600*1000L) _topBarHeading = "Yesterday"
         else _topBarHeading = dateUtils.getDateMonthAndDay(date)
     }
 

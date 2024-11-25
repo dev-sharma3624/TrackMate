@@ -11,7 +11,7 @@ import androidx.room.Relation
 @Entity(tableName = "HabitsList")
 data class Habit(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0L,
 
     @ColumnInfo(name = "habitName")
     val habitName: String,
@@ -20,7 +20,7 @@ data class Habit(
     val createdOn: Long,
 
     @ColumnInfo(name = "timeSet")
-    val timeSet: Long
+    val timeSet: String
 )
 
 
@@ -41,7 +41,7 @@ data class Habit(
 )
 data class HabitJournal(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0L,
 
     @ColumnInfo(name = "habitId")
     val habitId: Long,
@@ -69,4 +69,14 @@ data class HabitInfoWithJournal(
         entityColumn = "habitId"
     )
     val journal: List<HabitJournal>
+)
+
+
+
+data class HabitInfoWithBooleanValue(
+    @Embedded
+    val habit: Habit,
+
+    @ColumnInfo(name = "isDoneToday")
+    val isDoneToday : Boolean
 )
