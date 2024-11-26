@@ -50,7 +50,7 @@ data class HabitJournal(
     val doneOn: Long,
 
     @ColumnInfo(name = "timePeriod")
-    val timePeriod: Float
+    val timePeriod: String
 )
 
 

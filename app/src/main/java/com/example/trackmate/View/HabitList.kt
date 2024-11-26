@@ -46,7 +46,7 @@ fun HabitList(
 ){
 
 //    val habitList = viewModel.habitList.collectAsState(initial = emptyList())
-    val habitList = viewModel.habitList
+    val habitList = viewModel.dummyHabitList
 
     LazyColumn {
         /*items(habitList.value){

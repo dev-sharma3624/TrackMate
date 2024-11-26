@@ -12,7 +12,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
     }
 
     //To fetch details of a specific habit along with its journal entries
-    suspend fun getHabitWithJournalEntries(id: Long): HabitInfoWithJournal{
+    fun getHabitWithJournalEntries(id: Long): Flow<HabitInfoWithJournal>{
         return habitDao.getHabitWithJournalEntries(id)
     }
 

@@ -4,8 +4,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import javax.inject.Inject
 
-class DateUtils(){
+class DateUtils @Inject constructor(){
     private val dateFormat = "dd"
     private val dayFormat = "EEE"
     private val dateMonthDayFormat = "dd MMM, EEE"

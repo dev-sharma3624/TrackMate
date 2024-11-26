@@ -9,21 +9,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.HomeScreenViewModel
-import kotlin.random.Random
+import dagger.hilt.android.AndroidEntryPoint
 
-@Preview(showBackground = true)
+
 @Composable
 fun HomeScreen(
     navController: NavController = rememberNavController(),
     screenId: SCREENS = SCREENS.HOME
 ){
 
-    val homeScreenViewModel = HomeScreenViewModel()
+    val homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
 
     val topBarHeading = remember{ mutableStateOf(homeScreenViewModel.topBarHeading) }
 

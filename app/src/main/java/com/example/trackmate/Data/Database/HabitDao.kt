@@ -19,7 +19,7 @@ abstract class HabitDao {
     //To fetch details of a specific habit along with its journal entries
     @Transaction
     @Query("Select * from HabitsList where id = :id")
-    abstract suspend fun getHabitWithJournalEntries(id: Long): HabitInfoWithJournal
+    abstract fun getHabitWithJournalEntries(id: Long): Flow<HabitInfoWithJournal>
 
 
 
