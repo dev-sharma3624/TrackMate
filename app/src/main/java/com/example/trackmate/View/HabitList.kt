@@ -22,31 +22,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackmate.Data.Database.Habit
+import com.example.trackmate.Data.Database.HabitInfoWithBooleanValue
 import com.example.trackmate.ViewModel.HomeScreenViewModel
-
-@Preview(showBackground = true)
-@Composable
-fun HabitListPreview(){
-    HabitList(HomeScreenViewModel(), {})
-}
 
 
 @Composable
 fun HabitList(
     viewModel: HomeScreenViewModel,
-    onClickHabitCard: (Int) -> Unit
+    onClickHabitCard: (Int) -> Unit,
+    onClickCheckBoxToDelete: (Long) -> Unit,
+    onClickCheckBoxToAdd: (Long) -> Unit
 ){
 
 //    val habitList = viewModel.habitList.collectAsState(initial = emptyList())
-    val habitList = viewModel.dummyHabitList
+    val habitList by viewModel.dummyHabitList.collectAsState(initial = emptyList())
 
     LazyColumn {
         /*items(habitList.value){
@@ -62,8 +59,11 @@ fun HabitList(
         HabitItem(
             habit = it,
             onClickHabitCard = {habitId-> onClickHabitCard(habitId)},
-            onClickIconButton = {habitId->
-                viewModel.updateHabitList(habitId)
+            onClickIconButtonToDelete = { habitId->
+                onClickCheckBoxToDelete(habitId)
+            },
+            onClickIconButtonToAdd = { habitId->
+                onClickCheckBoxToAdd(habitId)
             }
         )
     }
@@ -72,22 +72,23 @@ fun HabitList(
 
 @Composable
 fun HabitItem(
-    habit: Habit,
+    habit: HabitInfoWithBooleanValue,
     onClickHabitCard: (Int) -> Unit,
-    onClickIconButton: (Int) -> Unit
+    onClickIconButtonToDelete: (Long) -> Unit,
+    onClickIconButtonToAdd: (Long) -> Unit
 ){
 
     Card(
-        onClick = { onClickHabitCard(habit.id) },
+        onClick = {  },
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)
             .border(
-                color = if (habit.isChecked) Color.Transparent else Colors.LIGHT_GREY,
+                color = if (habit.isDoneToday) Color.Transparent else Colors.LIGHT_GREY,
                 width = 2.dp,
                 shape = RoundedCornerShape(15)
             ),
-        colors = if(habit.isChecked){
+        colors = if(habit.isDoneToday){
             CardDefaults.cardColors(
                 containerColor = Colors.LIGHT_GREY,
                 disabledContainerColor = Colors.LIGHT_GREY,
@@ -114,21 +115,28 @@ fun HabitItem(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(
-                    text = habit.habitName,
+                    text = habit.habit.habitName,
                     fontWeight = FontWeight.Medium
                 )
 
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                 Text(
-                    text = habit.createdOn,
+                    text = "",
                     fontSize = 12.sp,
                     color = Colors.MODERATE_GREY
                 )
             }
 
             IconButton(
-                onClick = { onClickIconButton(habit.id) },
+                onClick = {
+                    //if checkbox was ticked when button was pressed
+                    if(habit.isDoneToday){
+                        onClickIconButtonToDelete(habit.habit.id)
+                    }else{
+                        onClickIconButtonToAdd(habit.habit.id)
+                    }
+                },
 
             ) {
                 Icon(
@@ -138,15 +146,15 @@ fun HabitItem(
                         .border(
                             width = 1.dp,
                             shape = CircleShape,
-                            color = if (habit.isChecked) Color.Transparent else Colors.MODERATE_GREY
+                            color = if (habit.isDoneToday) Color.Transparent else Colors.MODERATE_GREY
                         )
                         .background(
-                            color = if (habit.isChecked) Colors.RED else Color.Transparent,
+                            color = if (habit.isDoneToday) Colors.RED else Color.Transparent,
                             shape = CircleShape
                         )
                         .padding(2.dp)
                         .size(16.dp),
-                    tint = if(habit.isChecked) Color.White else Colors.MODERATE_GREY
+                    tint = if(habit.isDoneToday) Color.White else Colors.MODERATE_GREY
                 )
             }
         }

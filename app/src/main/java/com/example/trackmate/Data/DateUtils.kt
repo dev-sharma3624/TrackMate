@@ -10,8 +10,7 @@ class DateUtils @Inject constructor(){
     private val dateFormat = "dd"
     private val dayFormat = "EEE"
     private val dateMonthDayFormat = "dd MMM, EEE"
-    private val calendar = Calendar.getInstance()
-    private val currentTimeInMillis = calendar.timeInMillis
+    private val currentTimeInMillis = Calendar.getInstance().timeInMillis
 
     private fun dateFormatter(pattern: String, dateInLong: Long): String{
         val dateFormatter = SimpleDateFormat(pattern, Locale.getDefault())
@@ -45,6 +44,28 @@ class DateUtils @Inject constructor(){
 
     fun getCurrentDateInLong(): Long{
         return currentTimeInMillis
+    }
+
+    //function to get millisecond time from midnight starting of day to midnight ending of day
+    fun getStartAndEndInMillis(date: Long): Pair<Long, Long>{
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = date
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        val startTime = calendar.timeInMillis
+
+        calendar.set(Calendar.HOUR_OF_DAY, 23)
+        calendar.set(Calendar.MINUTE, 59)
+        calendar.set(Calendar.SECOND, 59)
+        calendar.set(Calendar.MILLISECOND, 999)
+
+        val endTime = calendar.timeInMillis
+
+        return Pair(startTime, endTime)
     }
 
 }

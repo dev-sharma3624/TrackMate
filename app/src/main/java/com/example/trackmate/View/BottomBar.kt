@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,80 +41,64 @@ fun BottomBar(
     screenId: SCREENS
 ) {
 
+    val screenParams = mapOf(
+        SCREENS.HOME to R.drawable.outline_home_24,
+        SCREENS.PROGRESS to R.drawable.outline_assessment_24,
+        SCREENS.SETTINGS to R.drawable.outline_settings_24
+    )
+
     Row(
-        modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 24.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
 
-        //HomeButton
-        BottomBarButton(
-            content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_home_24),
-                    contentDescription = null,
-                    tint = if(screenId == SCREENS.HOME) Colors.LIGHT_RED else Colors.MODERATE_GREY
-                )
-                Text(
-                    text = SCREENS.HOME.value,
-                    color = if(screenId == SCREENS.HOME) Colors.LIGHT_RED else Colors.MODERATE_GREY
-                )
-            },
-            onClick = {
-                navController.navigate(route = SCREENS.HOME.value)
-            }
-        )
-
-        //ProgressButton
-        BottomBarButton(
-            content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_assessment_24),
-                    contentDescription = null,
-                    tint = if(screenId == SCREENS.PROGRESS) Colors.LIGHT_RED else Colors.MODERATE_GREY
-                )
-                Text(
-                    text = SCREENS.PROGRESS.value,
-                    color = if(screenId == SCREENS.PROGRESS) Colors.LIGHT_RED else Colors.MODERATE_GREY
-                )
-            },
-            onClick = {
-                navController.navigate(route = SCREENS.PROGRESS.value)
-            }
-        )
-
-        //SettingsButton
-        BottomBarButton(
-            content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_settings_24),
-                    contentDescription = null,
-                    tint = if(screenId == SCREENS.SETTINGS) Colors.LIGHT_RED else Colors.MODERATE_GREY
-                )
-                Text(
-                    text = SCREENS.SETTINGS.value,
-                    color = if(screenId == SCREENS.SETTINGS) Colors.LIGHT_RED else Colors.MODERATE_GREY
-                )
-            },
-            onClick = {
-                navController.navigate(route = SCREENS.SETTINGS.value)
-            }
-        )
+        screenParams.forEach { (screenName, screenIcon) ->
+            BottomBarButton(
+                onClick = { screen->
+                    navController.navigate(route = screen)
+                },
+                iconColor = if(screenName.value == screenId.value) Colors.LIGHT_RED else Colors.MODERATE_GREY ,
+                screenHeading = screenName.value,
+                iconId = screenIcon
+            )
+        }
 
     }
 }
 
 @Composable
 fun BottomBarButton(
-    content: @Composable () -> Unit,
-    onClick: () -> Unit
+    onClick: (String) -> Unit,
+    iconColor: Color,
+    screenHeading: String,
+    iconId: Int
 ){
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.clickable { onClick() }
+        modifier = Modifier.clickable { onClick(screenHeading) }
     ) {
-        content()
+        Content(iconColor, screenHeading, iconId)
     }
 
+}
+
+@Composable
+fun Content(
+    iconColor: Color,
+    screenHeading: String,
+    iconId: Int
+){
+    Icon(
+        painter = painterResource(id = R.drawable.outline_home_24),
+        contentDescription = null,
+        tint = iconColor
+    )
+    Text(
+        text = screenHeading,
+        color = iconColor
+    )
 }

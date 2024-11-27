@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -19,16 +22,18 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun HomeScreen(
-    navController: NavController = rememberNavController(),
-    screenId: SCREENS = SCREENS.HOME
+    navController: NavController,
+    screenId: SCREENS
 ){
 
     val homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
 
-    val topBarHeading = remember{ mutableStateOf(homeScreenViewModel.topBarHeading) }
+    val topBarHeading by homeScreenViewModel.topBarHeading
+
+    var selectedDate by remember{ mutableLongStateOf(homeScreenViewModel.currentDate) }
 
     LayoutStructure(
-        topBarHeading = topBarHeading.value,
+        topBarHeading = topBarHeading,
         bottomBar = { BottomBar(navController = navController, screenId = screenId) },
         isBackButtonRequired = false
     ) {padding->
@@ -44,14 +49,19 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                CalendarRow(homeScreenViewModel)
+                CalendarRow(homeScreenViewModel, selectedDate){ date->
+                    selectedDate = date
+                }
             }
 
             //Habits
             Column {
-                HabitList(homeScreenViewModel){
-                    //TODO: Navigate to progress screen with the particular activity
-                }
+                HabitList(
+                    viewModel = homeScreenViewModel,
+                    onClickHabitCard = {},
+                    onClickCheckBoxToDelete = {},
+                    onClickCheckBoxToAdd = {}
+                )
             }
 
 

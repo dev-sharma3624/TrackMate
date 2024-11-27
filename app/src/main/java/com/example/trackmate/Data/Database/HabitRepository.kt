@@ -7,8 +7,8 @@ import javax.inject.Inject
 class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
     //This query will fetch details of habit along with true false value for checkbox
-    fun getHabitInfoWithBooleanValue(targetDate: Long) : Flow<List<HabitInfoWithBooleanValue>>{
-        return habitDao.getHabitInfoWithBooleanValue(targetDate)
+    fun getHabitInfoWithBooleanValue(startTime: Long, endTime: Long) : Flow<List<HabitInfoWithBooleanValue>>{
+        return habitDao.getHabitInfoWithBooleanValue(startTime = startTime, endTime = endTime)
     }
 
     //To fetch details of a specific habit along with its journal entries

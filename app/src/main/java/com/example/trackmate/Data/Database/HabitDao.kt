@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.Flow
 abstract class HabitDao {
 
     //This query will fetch details of habit along with true false value for checkbox
-    @Query("Select HabitsList.*, CASE WHEN HabitJournal.doneOn = :targetDate THEN 1 ELSE 0 END as isDoneToday from HabitsList inner join HabitJournal on HabitsList.id = HabitJournal.habitId where HabitsList.createdOn <= :targetDate")
-    abstract fun getHabitInfoWithBooleanValue(targetDate: Long) : Flow<List<HabitInfoWithBooleanValue>>
+    @Query("Select HabitsList.*, CASE WHEN HabitJournal.doneOn BETWEEN :startTime and :endTime THEN 1 ELSE 0 END as isDoneToday from HabitsList left join HabitJournal on HabitsList.id = HabitJournal.habitId where HabitsList.createdOn <= :endTime")
+    abstract fun getHabitInfoWithBooleanValue(startTime: Long, endTime: Long) : Flow<List<HabitInfoWithBooleanValue>>
 
     //To fetch details of a specific habit along with its journal entries
     @Transaction

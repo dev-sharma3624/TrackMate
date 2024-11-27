@@ -92,8 +92,9 @@ class HomeScreenViewModel @Inject constructor(
     }
 
 
-    private fun getHabitList(date: Long) {
-        habitList = habitRepository.getHabitInfoWithBooleanValue(date)
+    fun getHabitList(date: Long) {
+        val (startTime, endTime) = dateUtils.getStartAndEndInMillis(date)
+        habitList = habitRepository.getHabitInfoWithBooleanValue(startTime = startTime, endTime = endTime)
     }
 
     fun getHabitInfoWithJournal(id: Long){

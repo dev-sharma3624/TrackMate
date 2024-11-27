@@ -24,26 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.trackmate.ViewModel.HomeScreenViewModel
 
-@Preview(showBackground = true)
-@Composable
-fun CalendarRowPreview(){
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        CalendarRow(HomeScreenViewModel())
-    }
-}
-
-
 @Composable
 fun CalendarRow(
-    viewModel: HomeScreenViewModel
+    viewModel: HomeScreenViewModel,
+    selectedDate: Long,
+    onValueChanged: (Long) -> Unit
 ){
-    var selectedDate by remember{ mutableLongStateOf(viewModel.currentDate) }
 
-    val lazyRowState = rememberLazyListState(
-        initialFirstVisibleItemIndex = 47
-    )
+    val lazyRowState = rememberLazyListState()
 
     LazyRow(
         state = lazyRowState
@@ -54,8 +42,9 @@ fun CalendarRow(
                 isSelected = selectedDate == it,
                 onClickDateCard = {
                     date->
-                    selectedDate = date
+                    onValueChanged(date)
                     viewModel.topBarHeadingDecider(it)
+                    viewModel.getHabitList(it)
                 },
                 date = viewModel.getDateInString(it),
                 day = viewModel.getDayInString(it)
