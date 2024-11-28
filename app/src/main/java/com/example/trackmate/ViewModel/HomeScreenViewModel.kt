@@ -6,13 +6,11 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.trackmate.Data.DateUtils
-import com.example.trackmate.Data.Database.Habit
-import com.example.trackmate.Data.Database.HabitDao
-import com.example.trackmate.Data.Database.HabitInfoWithBooleanValue
-import com.example.trackmate.Data.Database.HabitInfoWithJournal
-import com.example.trackmate.Data.Database.HabitJournal
-import com.example.trackmate.Data.Database.HabitRepository
+import com.example.trackmate.Data.Habit
+import com.example.trackmate.Data.HabitInfoWithBooleanValue
+import com.example.trackmate.Data.HabitInfoWithJournal
+import com.example.trackmate.Data.HabitJournal
+import com.example.trackmate.Data.HabitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -94,7 +92,9 @@ class HomeScreenViewModel @Inject constructor(
 
     fun getHabitList(date: Long) {
         val (startTime, endTime) = dateUtils.getStartAndEndInMillis(date)
-        habitList = habitRepository.getHabitInfoWithBooleanValue(startTime = startTime, endTime = endTime)
+        viewModelScope.launch {
+            habitList = habitRepository.getHabitInfoWithBooleanValue(startTime = startTime, endTime = endTime)
+        }
     }
 
     fun getHabitInfoWithJournal(id: Long){
@@ -161,11 +161,16 @@ class HomeScreenViewModel @Inject constructor(
         return isSuccess
     }
 
-    fun deleteHabitJournal(deletedJournal: HabitJournal): Boolean{
+    fun deleteHabitJournal(deletedHabitId: Long, date: Long): Boolean{
         var isSuccess = false
+        val (startTime, endTime) = dateUtils.getStartAndEndInMillis(date)
         viewModelScope.launch {
             try {
-                habitRepository.deleteHabitJournal(deletedJournal)
+                habitRepository.deleteHabitJournal(
+                    deletedHabitId = deletedHabitId,
+                    startTime = startTime,
+                    endTime = endTime
+                )
                 isSuccess = true
             }catch (_: Exception){
                 isSuccess = false

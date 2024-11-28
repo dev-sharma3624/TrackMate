@@ -1,4 +1,4 @@
-package com.example.trackmate.Data.Database
+package com.example.trackmate.Data
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -56,8 +56,11 @@ abstract class HabitDao {
     abstract suspend fun deleteHabit(deletedHabit: Habit)
 
 
-    //to delete a habit journal entry, when the checkbox is un-ticked
-    //TODO: create an undo option for this as it is an expensive operation with more chances of mistake
+    //to delete a habit journal from the progress screen
     @Delete
     abstract suspend fun deleteHabitJournal(deletedJournal: HabitJournal)
+
+    //to delete a habit journal entry, when the checkbox is un-ticked
+    @Query("Delete from habitjournal where habitId = :deletedHabitId and doneOn between :startTime and :endTime")
+    abstract suspend fun deleteHabitJournal(deletedHabitId: Long, startTime: Long, endTime: Long)
 }

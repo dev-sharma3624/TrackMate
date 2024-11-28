@@ -1,4 +1,4 @@
-package com.example.trackmate.Data.Database
+package com.example.trackmate.Data
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
@@ -50,7 +50,7 @@ data class HabitJournal(
     val doneOn: Long,
 
     @ColumnInfo(name = "timePeriod")
-    val timePeriod: String
+    val timePeriod: Float
 )
 
 

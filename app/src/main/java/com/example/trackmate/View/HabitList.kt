@@ -30,14 +30,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.trackmate.Data.Database.HabitInfoWithBooleanValue
+import com.example.trackmate.Data.HabitInfoWithBooleanValue
 import com.example.trackmate.ViewModel.HomeScreenViewModel
 
 
 @Composable
 fun HabitList(
     viewModel: HomeScreenViewModel,
-    onClickHabitCard: (Int) -> Unit,
+    onClickHabitCard: (Long) -> Unit,
     onClickCheckBoxToDelete: (Long) -> Unit,
     onClickCheckBoxToAdd: (Long) -> Unit
 ){
@@ -73,13 +73,15 @@ fun HabitList(
 @Composable
 fun HabitItem(
     habit: HabitInfoWithBooleanValue,
-    onClickHabitCard: (Int) -> Unit,
+    onClickHabitCard: (Long) -> Unit,
     onClickIconButtonToDelete: (Long) -> Unit,
     onClickIconButtonToAdd: (Long) -> Unit
 ){
 
     Card(
-        onClick = {  },
+        onClick = {
+            onClickHabitCard(habit.habit.id)
+        },
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp)

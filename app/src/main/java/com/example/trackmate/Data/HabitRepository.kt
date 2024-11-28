@@ -1,4 +1,4 @@
-package com.example.trackmate.Data.Database
+package com.example.trackmate.Data
 
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -68,8 +68,12 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
     //to delete a habit journal entry, when the checkbox is un-ticked
     //TODO: create an undo option for this as it is an expensive operation with more chances of mistake
-    suspend fun deleteHabitJournal(deletedJournal: HabitJournal){
-        habitDao.deleteHabitJournal(deletedJournal)
+    suspend fun deleteHabitJournal(deletedHabitId: Long, startTime: Long, endTime: Long){
+        habitDao.deleteHabitJournal(
+            deletedHabitId = deletedHabitId,
+            startTime = startTime,
+            endTime = endTime
+        )
     }
 
 }

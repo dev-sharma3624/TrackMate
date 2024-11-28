@@ -1,25 +1,18 @@
 package com.example.trackmate.View
 
-import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
@@ -27,22 +20,26 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.trackmate.Data.Habit
+import com.example.trackmate.Data.HabitInfoWithJournal
 import com.example.trackmate.SCREENS
+import com.example.trackmate.ViewModel.ProgressViewModel
 
 
 @Preview(showBackground = true)
@@ -51,14 +48,24 @@ fun ProgressScreenPreview(){
     ProgressScreen(navController = rememberNavController(), screenId = SCREENS.PROGRESS)
 }
 
+enum class
+
 @Composable
 fun ProgressScreen(
     navController: NavController,
     screenId: SCREENS
 ){
 
+    val progressViewModel: ProgressViewModel = hiltViewModel()
+
+    val habitInfoWithJournal by progressViewModel.habitInfoWithJournalEntries.collectAsState(initial = HabitInfoWithJournal(
+        Habit(habitName = "", createdOn = 0L, timeSet = ""),
+        emptyList()
+    )
+    )
+
     LayoutStructure(
-        topBarHeading = "Morning Jog",
+        topBarHeading = habitInfoWithJournal.habit.habitName,
         bottomBar = {BottomBar(navController = navController, screenId = screenId)},
         isBackButtonRequired = true
     ) {padding->
@@ -83,7 +90,9 @@ fun ProgressScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "59:21",
+                            text = habitInfoWithJournal.journal.maxBy {
+                                it.doneOn
+                            }.timePeriod,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 60.sp
                         )
@@ -96,7 +105,7 @@ fun ProgressScreen(
 
                     //Activity text
                     Text(
-                        text = "Minutes jogged",
+                        text = "Minutes",
                         color = Colors.MODERATE_GREY,
                         fontSize = 15.sp
                     )

@@ -2,8 +2,8 @@ package com.example.trackmate
 
 import android.app.Application
 import androidx.room.Room
-import com.example.trackmate.Data.Database.HabitDao
-import com.example.trackmate.Data.Database.HabitDatabase
+import com.example.trackmate.Data.HabitDao
+import com.example.trackmate.Data.HabitDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +16,7 @@ object Graph {
 
     @Provides
     @Singleton
-    fun provideDatabase(context: Application): HabitDatabase{
+    fun provideDatabase(context: Application): HabitDatabase {
         return Room.databaseBuilder(
             context,
             HabitDatabase::class.java,
@@ -26,7 +26,7 @@ object Graph {
 
     @Provides
     @Singleton
-    fun provideDao(database: HabitDatabase): HabitDao{
+    fun provideDao(database: HabitDatabase): HabitDao {
         return database.habitDao()
     }
 

@@ -8,16 +8,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import com.example.trackmate.ProgressScreenHabit
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.HomeScreenViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
 
 @Composable
@@ -58,9 +56,21 @@ fun HomeScreen(
             Column {
                 HabitList(
                     viewModel = homeScreenViewModel,
-                    onClickHabitCard = {},
-                    onClickCheckBoxToDelete = {},
-                    onClickCheckBoxToAdd = {}
+                    onClickHabitCard = {habitId->
+                        ProgressScreenHabit.id = habitId
+                        homeScreenViewModel.getHabitInfoWithJournal(habitId)
+                    },
+                    onClickCheckBoxToDelete = {habitId->
+                        homeScreenViewModel.deleteHabitJournal(
+                            deletedHabitId = habitId,
+                            date = selectedDate
+                        )
+                    },
+                    onClickCheckBoxToAdd = {
+                        //todo: when  checkbox is ticked back we need time from between
+                        //todo: which the activity was performed hence we need to create
+                        //todo: a dialog/screen to get that time before creating an entry
+                    }
                 )
             }
 

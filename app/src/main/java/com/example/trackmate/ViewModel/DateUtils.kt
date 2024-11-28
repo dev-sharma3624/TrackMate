@@ -1,4 +1,4 @@
-package com.example.trackmate.Data
+package com.example.trackmate.ViewModel
 
 import java.text.SimpleDateFormat
 import java.util.Calendar

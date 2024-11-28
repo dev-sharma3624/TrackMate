@@ -1,4 +1,4 @@
-package com.example.trackmate.Data.Database
+package com.example.trackmate.Data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
