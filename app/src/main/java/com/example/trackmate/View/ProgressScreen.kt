@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -48,8 +49,6 @@ fun ProgressScreenPreview(){
     ProgressScreen(navController = rememberNavController(), screenId = SCREENS.PROGRESS)
 }
 
-enum class
-
 @Composable
 fun ProgressScreen(
     navController: NavController,
@@ -58,14 +57,17 @@ fun ProgressScreen(
 
     val progressViewModel: ProgressViewModel = hiltViewModel()
 
-    val habitInfoWithJournal by progressViewModel.habitInfoWithJournalEntries.collectAsState(initial = HabitInfoWithJournal(
+
+    val latestActivityTime by progressViewModel.latestActivityTime.collectAsState()
+
+    /*val habitInfoWithJournal by progressViewModel.habitInfoWithJournalEntries.collectAsState(initial = HabitInfoWithJournal(
         Habit(habitName = "", createdOn = 0L, timeSet = ""),
         emptyList()
     )
-    )
+    )*/
 
     LayoutStructure(
-        topBarHeading = habitInfoWithJournal.habit.habitName,
+        topBarHeading = progressViewModel.topBarHeading,
         bottomBar = {BottomBar(navController = navController, screenId = screenId)},
         isBackButtonRequired = true
     ) {padding->
@@ -89,10 +91,15 @@ fun ProgressScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
+
+                        //big size time display
                         Text(
-                            text = habitInfoWithJournal.journal.maxBy {
-                                it.doneOn
-                            }.timePeriod,
+                            text = if(latestActivityTime == 0f){
+                                "00:00"
+                            }else{
+                                val s = latestActivityTime.toString().replace(".", ":")
+                                if(s.length == 4) "0".plus(s) else s
+                            },
                             fontFamily = FontFamily.Monospace,
                             fontSize = 60.sp
                         )
