@@ -10,6 +10,7 @@ class DateUtils @Inject constructor(){
     private val dateFormat = "dd"
     private val dayFormat = "EEE"
     private val dateMonthDayFormat = "dd MMM, EEE"
+    private val dateAndMonthFormat = "dd/MM"
     private val currentTimeInMillis = Calendar.getInstance().timeInMillis
 
     private fun dateFormatter(pattern: String, dateInLong: Long): String{
@@ -42,6 +43,10 @@ class DateUtils @Inject constructor(){
         return dateFormatter(pattern = dateMonthDayFormat, dateInLong = day)
     }
 
+    fun getDateAndMonth(day: Long): String{
+        return dateFormatter(dateAndMonthFormat, day)
+    }
+
     fun getCurrentDateInLong(): Long{
         return currentTimeInMillis
     }
@@ -66,6 +71,23 @@ class DateUtils @Inject constructor(){
         val endTime = calendar.timeInMillis
 
         return Pair(startTime, endTime)
+    }
+
+    fun getWeekRange(diff: Int): Pair<Long, Long>{
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = currentTimeInMillis
+            set(Calendar.DAY_OF_MONTH,
+                get(Calendar.DAY_OF_MONTH) - diff)
+            set(Calendar.DAY_OF_WEEK, 1)
+        }
+
+        val startDate = calendar.timeInMillis
+
+        calendar.set(Calendar.DAY_OF_WEEK, 7)
+        val endDate = calendar.timeInMillis
+
+        return Pair(startDate, endDate)
+
     }
 
 }

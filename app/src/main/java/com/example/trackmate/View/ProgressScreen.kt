@@ -2,10 +2,12 @@ package com.example.trackmate.View
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +24,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,12 +47,6 @@ import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.ProgressViewModel
 
 
-@Preview(showBackground = true)
-@Composable
-fun ProgressScreenPreview(){
-    ProgressScreen(navController = rememberNavController(), screenId = SCREENS.PROGRESS)
-}
-
 @Composable
 fun ProgressScreen(
     navController: NavController,
@@ -59,6 +57,10 @@ fun ProgressScreen(
 
 
     val latestActivityTime by progressViewModel.latestActivityTime.collectAsState()
+    val deviationFromLastWeek by progressViewModel.deviationFromLastWeek.collectAsState()
+    val graphPlottingValues by progressViewModel.graphPlottingValues.collectAsState()
+
+    val maxGraphValue by remember { mutableFloatStateOf(graphPlottingValues.maxOf { it.second }) }
 
     /*val habitInfoWithJournal by progressViewModel.habitInfoWithJournalEntries.collectAsState(initial = HabitInfoWithJournal(
         Habit(habitName = "", createdOn = 0L, timeSet = ""),
@@ -94,12 +96,7 @@ fun ProgressScreen(
 
                         //big size time display
                         Text(
-                            text = if(latestActivityTime == 0f){
-                                "00:00"
-                            }else{
-                                val s = latestActivityTime.toString().replace(".", ":")
-                                if(s.length == 4) "0".plus(s) else s
-                            },
+                            text = latestActivityTime,
                             fontFamily = FontFamily.Monospace,
                             fontSize = 60.sp
                         )
@@ -120,7 +117,13 @@ fun ProgressScreen(
 
                 Row {
                     Text(
-                        text = "+12m ",
+                        text = if(deviationFromLastWeek > 0){
+                            "+" + deviationFromLastWeek.toString() + "m"
+                        }else if (deviationFromLastWeek == 0f){
+                            "No change"
+                        }else{
+                            "-" + deviationFromLastWeek.toString() + "m"
+                        },
                         color = Colors.RED,
                         fontSize = 20.sp
                     )
@@ -186,50 +189,25 @@ fun ProgressScreen(
                 )
             }*/
 
-            LazyRow(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                items(count = 5){
-                    Column(
-                        modifier = Modifier
-                            .height(250.dp)
-                            .width(40.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
-                        Canvas(modifier = Modifier
-                            .width(12.dp)
-                            .height(180.dp)) {
-
-                            val canvasHeight = size.height
-                            val canvasWidth = size.width
-
-                            drawRoundRect(
-                                color = Colors.DARK_BLUE,
-                                size = Size(width = canvasWidth, height = 300f),
-                                topLeft = Offset(x = 0f, y = canvasHeight - 300f),
-                                cornerRadius = CornerRadius(100f)
-                            )
-                        }
-
-                        Column {
-                            Text(
-                                modifier = Modifier.padding(2.dp),
-                                text = "Mon",
-                                color = Colors.MODERATE_GREY
-                            )
-
-                            Text(
-                                text = "09/11",
-                                color = Colors.MODERATE_GREY
-                            )
-                        }
-                    }
+                graphPlottingValues.forEach {
+                    LineGraph(
+                        height = if(it.second == maxGraphValue){
+                            250f
+                        }else{
+                            it.second * 250f/maxGraphValue
+                        },
+                        dayText = progressViewModel.getDayTextForGraph(it.first),
+                        dateText = progressViewModel.getDateTextForGraph(it.first)
+                    )
                 }
+
             }
 
             //Entries headline + pdf downloader
@@ -304,6 +282,75 @@ fun EntryCard(){
                     color = Colors.MODERATE_GREY
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+fun LineGraph(
+    height: Float,
+    dayText: String,
+    dateText: String
+){
+
+
+    Column(
+        modifier = Modifier
+            .height(250.dp)
+            .width(40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Canvas(modifier = Modifier.weight(0.7f)) {
+
+            val canvasHeight = size.height
+            val canvasWidth = size.width
+
+            drawRoundRect(
+                color = Colors.DARK_BLUE,
+                size = Size(width = canvasWidth, height = height),
+                topLeft = Offset(x = 0f, y = canvasHeight - height),
+                cornerRadius = CornerRadius(100f)
+            )
+        }
+
+        Column(
+        ) {
+            Text(
+                modifier = Modifier.padding(2.dp),
+                text = dayText,
+                color = Colors.MODERATE_GREY
+            )
+
+            Text(
+                text = dateText,
+                color = Colors.MODERATE_GREY
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable fun Test(){
+    Column(
+        Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .border(2.dp, Color.Red),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
+
+            LineGraph(
+                300f,
+                "Mon",
+                "09/11"
+            )
+
         }
     }
 }
