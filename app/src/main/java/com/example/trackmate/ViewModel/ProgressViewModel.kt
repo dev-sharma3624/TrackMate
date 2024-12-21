@@ -76,9 +76,9 @@ class ProgressViewModel @Inject constructor(
             }.timePeriod
         }else{
             0f
-        }}.toString().replace(".", ":").substring(0, 4)
+        }}.toString()
 
-        _latestActivityTime.value = if(time.length == 4) "0".plus(time) else time
+        _latestActivityTime.value = formatString(time)
 
     }
 
@@ -139,6 +139,30 @@ class ProgressViewModel @Inject constructor(
 
     fun getDateTextForGraph(date: Long): String{
         return  dateUtils.getDateAndMonth(date)
+    }
+
+
+    fun formatString(str: String): String{
+        str.replace(".", ":").substring(0, 4)
+        if(str.length == 4){
+            return  "0".plus(str)
+        }else{
+            return str
+        }
+    }
+
+    fun createTimeStamp(doneOn: Long, timePeriod: Float): String{
+        val timeStamp = dateUtils.getTimeStamp(doneOn, 0f)
+
+        timeStamp.plus(" - ")
+
+        timeStamp.plus(dateUtils.getTimeStamp(doneOn, timePeriod))
+
+        return timeStamp
+    }
+    // Sep 9, Thu
+    fun createDateStamp(doneOn: Long): String{
+        return dateUtils.getDateMonthAndDay(doneOn)
     }
 
 

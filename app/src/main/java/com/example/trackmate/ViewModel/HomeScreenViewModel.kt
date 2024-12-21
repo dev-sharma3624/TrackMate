@@ -1,6 +1,7 @@
 package com.example.trackmate.ViewModel
 
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +33,10 @@ class HomeScreenViewModel @Inject constructor(
     */
 
     //    private val dateUtils = DateUtils()
+
+    val tag = "NAMASTE"
+
+
     val dateList: ArrayList<Long>
     val currentDate: Long
 
@@ -62,11 +67,17 @@ class HomeScreenViewModel @Inject constructor(
 
 
     init {
+        Log.d(tag, "Inside init bloc of HomeScreenViewModel")
         currentDate = dateUtils.getCurrentDateInLong()
+        Log.d(tag, "current date initialised to $currentDate")
         dateList = dateUtils.createDateList()
-        /*viewModelScope.launch {
-            habitList = habitRepository.getHabitInfoWithBooleanValue(currentDate!!)
-        }*/
+        viewModelScope.launch {
+            val (startTime, endTime) = dateUtils.getStartAndEndInMillis(currentDate)
+            habitList = habitRepository.getHabitInfoWithBooleanValue(
+                startTime = startTime,
+                endTime = endTime
+            )
+        }
     }
 
 

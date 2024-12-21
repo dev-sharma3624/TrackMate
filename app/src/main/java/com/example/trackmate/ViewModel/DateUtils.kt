@@ -11,6 +11,7 @@ class DateUtils @Inject constructor(){
     private val dayFormat = "EEE"
     private val dateMonthDayFormat = "dd MMM, EEE"
     private val dateAndMonthFormat = "dd/MM"
+    private val timeFormat = "hh:mm a"
     private val currentTimeInMillis = Calendar.getInstance().timeInMillis
 
     private fun dateFormatter(pattern: String, dateInLong: Long): String{
@@ -87,6 +88,28 @@ class DateUtils @Inject constructor(){
         val endDate = calendar.timeInMillis
 
         return Pair(startDate, endDate)
+
+    }
+
+
+    fun getTimeStamp(date: Long, difference: Float): String{
+
+        val hourDifference = (difference / 60).toInt()
+        val minuteDifference = (difference - hourDifference*60).toInt()
+
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = date
+            set(
+                Calendar.HOUR_OF_DAY,
+                get(Calendar.HOUR_OF_DAY) + hourDifference
+            )
+            set(
+                Calendar.MINUTE,
+                get(Calendar.MINUTE) + minuteDifference
+            )
+        }
+
+        return dateFormatter(timeFormat, calendar.timeInMillis)
 
     }
 

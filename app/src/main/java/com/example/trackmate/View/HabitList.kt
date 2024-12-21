@@ -42,8 +42,8 @@ fun HabitList(
     onClickCheckBoxToAdd: (Long) -> Unit
 ){
 
-//    val habitList = viewModel.habitList.collectAsState(initial = emptyList())
-    val habitList by viewModel.dummyHabitList.collectAsState(initial = emptyList())
+    val habitList = viewModel.habitList.collectAsState(initial = emptyList())
+//    val habitList by viewModel.dummyHabitList.collectAsState(initial = emptyList())
 
     LazyColumn {
         /*items(habitList.value){
@@ -55,18 +55,18 @@ fun HabitList(
                 }
             )
         }*/
-        items(habitList){
-        HabitItem(
-            habit = it,
-            onClickHabitCard = {habitId-> onClickHabitCard(habitId)},
-            onClickIconButtonToDelete = { habitId->
-                onClickCheckBoxToDelete(habitId)
-            },
-            onClickIconButtonToAdd = { habitId->
-                onClickCheckBoxToAdd(habitId)
-            }
-        )
-    }
+        items(habitList.value){
+            HabitItem(
+                habit = it,
+                onClickHabitCard = {habitId-> onClickHabitCard(habitId)},
+                onClickIconButtonToDelete = { habitId->
+                    onClickCheckBoxToDelete(habitId)
+                },
+                onClickIconButtonToAdd = { habitId->
+                    onClickCheckBoxToAdd(habitId)
+                }
+            )
+        }
     }
 }
 

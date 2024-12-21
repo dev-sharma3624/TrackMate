@@ -1,6 +1,7 @@
 package com.example.trackmate
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,9 +19,13 @@ import java.time.LocalDate
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    val tag = "NAMASTE"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            Log.d(tag, "Inside main activity calling navigation")
             Navigation()
         }
     }

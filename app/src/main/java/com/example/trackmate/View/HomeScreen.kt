@@ -1,5 +1,6 @@
 package com.example.trackmate.View
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,12 +24,17 @@ fun HomeScreen(
     navController: NavController,
     screenId: SCREENS
 ){
+    val tag = "NAMASTE"
+
+    Log.d(tag, "Inside Home Screen")
 
     val homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
 
     val topBarHeading by homeScreenViewModel.topBarHeading
 
     var selectedDate by remember{ mutableLongStateOf(homeScreenViewModel.currentDate) }
+
+    Log.d(tag, "Inside Home screen selected date initialised to: $selectedDate")
 
     LayoutStructure(
         topBarHeading = topBarHeading,
@@ -47,8 +53,11 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                Log.d(tag, "Value of selectedDate passed to CalendarRow: $selectedDate")
                 CalendarRow(homeScreenViewModel, selectedDate){ date->
                     selectedDate = date
+                    homeScreenViewModel.getHabitList(selectedDate)
+
                 }
             }
 
@@ -58,7 +67,7 @@ fun HomeScreen(
                     viewModel = homeScreenViewModel,
                     onClickHabitCard = {habitId->
                         ProgressScreenHabit.id = habitId
-                        homeScreenViewModel.getHabitInfoWithJournal(habitId)
+                        navController.navigate(SCREENS.PROGRESS)
                     },
                     onClickCheckBoxToDelete = {habitId->
                         homeScreenViewModel.deleteHabitJournal(

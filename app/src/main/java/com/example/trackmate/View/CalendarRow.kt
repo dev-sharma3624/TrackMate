@@ -1,5 +1,6 @@
 package com.example.trackmate.View
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,12 +32,18 @@ fun CalendarRow(
     onValueChanged: (Long) -> Unit
 ){
 
-    val lazyRowState = rememberLazyListState()
+    val tag = "NAMASTE"
+
+    val lazyRowState = rememberLazyListState(
+        initialFirstVisibleItemIndex = viewModel.dateList.indexOf(selectedDate) - 4
+    )
 
     LazyRow(
         state = lazyRowState
     ){
         items(viewModel.dateList){
+            Log.d(tag, "Boolean value $selectedDate and $it")
+            Log.d(tag, (selectedDate == it).toString())
             DateCard(
                 dateInLong = it,
                 isSelected = selectedDate == it,

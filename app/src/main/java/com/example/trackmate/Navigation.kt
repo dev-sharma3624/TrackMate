@@ -1,5 +1,6 @@
 package com.example.trackmate
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,11 +13,14 @@ import com.example.trackmate.View.SettingsScreen
 @Composable
 fun Navigation(){
 
+    val tag = "NAMASTE"
+
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = SCREENS.HOME.value) {
 
         composable(route = SCREENS.HOME.value){
+            Log.d(tag, "Inside Navigation going to HomeScreen")
             HomeScreen(
                 navController = navController,
                 screenId = SCREENS.HOME
