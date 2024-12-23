@@ -12,8 +12,8 @@ fun SettingsScreen(
     LayoutStructure(
         topBarHeading = "Settings",
         bottomBar = { BottomBar(navController = navController, screenId = screenId)},
-        isBackButtonRequired = false
-    ) {
-
-    }
+        isBackButtonRequired = false,
+        topBarButtonAction = {},
+        content = {}
+    )
 }

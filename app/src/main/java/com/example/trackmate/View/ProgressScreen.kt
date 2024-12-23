@@ -69,181 +69,183 @@ fun ProgressScreen(
     LayoutStructure(
         topBarHeading = progressViewModel.topBarHeading,
         bottomBar = {BottomBar(navController = navController, screenId = screenId)},
-        isBackButtonRequired = true
-    ) {padding->
+        isBackButtonRequired = true,
+        topBarButtonAction = {},
+        content = {padding->
 
-        Column(
-            modifier = Modifier.padding(padding)
-        ) {
-
-            Spacer(modifier = Modifier.padding(vertical = 24.dp))
-
-            //Time/Number display
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.padding(padding)
             ) {
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
 
-                        //big size time display
+                Spacer(modifier = Modifier.padding(vertical = 24.dp))
+
+                //Time/Number display
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+
+                            //big size time display
+                            Text(
+                                text = latestActivityTime,
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 60.sp
+                            )
+                            Icon(
+                                imageVector = Icons.Default.ArrowDropDown,
+                                contentDescription = null,
+                                tint = Colors.RED
+                            )
+                        }
+
+                        //Activity text
                         Text(
-                            text = latestActivityTime,
-                            fontFamily = FontFamily.Monospace,
-                            fontSize = 60.sp
+                            text = "Minutes",
+                            color = Colors.MODERATE_GREY,
+                            fontSize = 15.sp
+                        )
+                    }
+
+                    Row {
+                        Text(
+                            text = if(deviationFromLastWeek > 0){
+                                "+" + deviationFromLastWeek.toString() + "m"
+                            }else if (deviationFromLastWeek == 0f){
+                                "No change"
+                            }else{
+                                "-" + deviationFromLastWeek.toString() + "m"
+                            },
+                            color = Colors.RED,
+                            fontSize = 20.sp
+                        )
+
+                        Text(
+                            text = "this week",
+                            color = Colors.MODERATE_GREY,
+                            fontSize = 20.sp
+                        )
+                    }
+                }
+
+                //Week + Graph selector
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Graph",
+                            color = Colors.MODERATE_GREY,
+                            fontWeight = FontWeight.Bold
                         )
                         Icon(
                             imageVector = Icons.Default.ArrowDropDown,
                             contentDescription = null,
-                            tint = Colors.RED
+                            tint = Colors.LIGHT_RED
                         )
                     }
 
-                    //Activity text
-                    Text(
-                        text = "Minutes",
-                        color = Colors.MODERATE_GREY,
-                        fontSize = 15.sp
-                    )
-                }
-
-                Row {
-                    Text(
-                        text = if(deviationFromLastWeek > 0){
-                            "+" + deviationFromLastWeek.toString() + "m"
-                        }else if (deviationFromLastWeek == 0f){
-                            "No change"
-                        }else{
-                            "-" + deviationFromLastWeek.toString() + "m"
-                        },
-                        color = Colors.RED,
-                        fontSize = 20.sp
-                    )
-
-                    Text(
-                        text = "this week",
-                        color = Colors.MODERATE_GREY,
-                        fontSize = 20.sp
-                    )
-                }
-            }
-
-            //Week + Graph selector
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Graph",
-                        color = Colors.MODERATE_GREY,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = null,
-                        tint = Colors.LIGHT_RED
-                    )
-                }
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Lines",
-                        color = Colors.MODERATE_GREY,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ArrowDropDown,
-                        contentDescription = null,
-                        tint = Colors.LIGHT_RED
-                    )
-                }
-            }
-
-            //Graph
-
-            //Line Graph
-
-            /*Canvas(modifier = Modifier.fillMaxWidth().height(250.dp)) {
-                drawRoundRect(
-                    color = Colors.DARK_BLUE,
-                    size = this.size/5f
-                )
-            }*/
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(250.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-
-                graphPlottingValues.forEach {
-                    LineGraph(
-                        height = if(it.second == maxGraphValue){
-                            250f
-                        }else{
-                            it.second * 250f/maxGraphValue
-                        },
-                        dayText = progressViewModel.getDayTextForGraph(it.first),
-                        dateText = progressViewModel.getDateTextForGraph(it.first)
-                    )
-                }
-
-            }
-
-            //Entries headline + pdf downloader
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Entries"
-                )
-                Text(
-                    text = "Pdf",
-                    color = Color.White,
-                    modifier = Modifier
-                        .background(
-                            color = Colors.RED,
-                            shape = CircleShape
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Lines",
+                            color = Colors.MODERATE_GREY,
+                            fontWeight = FontWeight.Bold
                         )
-                        .padding(horizontal = 8.dp)
-                )
-            }
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            tint = Colors.LIGHT_RED
+                        )
+                    }
+                }
 
-            //Entries List
-            LazyColumn {
-                items(journalEntries.journal){
-                    EntryCard(
-                        activityTime = progressViewModel.formatString(it.timePeriod.toString()),
-                        activityTimeStamp = progressViewModel.createTimeStamp(it.doneOn, it.timePeriod),
-                        dateStamp = progressViewModel.createDateStamp(it.doneOn)
+                //Graph
+
+                //Line Graph
+
+                /*Canvas(modifier = Modifier.fillMaxWidth().height(250.dp)) {
+                    drawRoundRect(
+                        color = Colors.DARK_BLUE,
+                        size = this.size/5f
+                    )
+                }*/
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+
+                    graphPlottingValues.forEach {
+                        LineGraph(
+                            height = if(it.second == maxGraphValue){
+                                250f
+                            }else{
+                                it.second * 250f/maxGraphValue
+                            },
+                            dayText = progressViewModel.getDayTextForGraph(it.first),
+                            dateText = progressViewModel.getDateTextForGraph(it.first)
+                        )
+                    }
+
+                }
+
+                //Entries headline + pdf downloader
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Entries"
+                    )
+                    Text(
+                        text = "Pdf",
+                        color = Color.White,
+                        modifier = Modifier
+                            .background(
+                                color = Colors.RED,
+                                shape = CircleShape
+                            )
+                            .padding(horizontal = 8.dp)
                     )
                 }
-            }
-        }
 
-    }
+                //Entries List
+                LazyColumn {
+                    items(journalEntries.journal){
+                        EntryCard(
+                            activityTime = progressViewModel.formatString(it.timePeriod.toString()),
+                            activityTimeStamp = progressViewModel.createTimeStamp(it.doneOn, it.timePeriod),
+                            dateStamp = progressViewModel.createDateStamp(it.doneOn)
+                        )
+                    }
+                }
+            }
+
+        }
+    )
 
 }
 

@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun TopBar(
     heading: String,
-    isBackButtonRequired: Boolean
+    isBackButtonRequired: Boolean,
+    iconButtonAction: () -> Unit
 ){
 
     Row(
@@ -53,7 +54,7 @@ fun TopBar(
 
 
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { iconButtonAction() },
             modifier = Modifier.padding(end = 16.dp, top = 4.dp)
         ) {
             Icon(

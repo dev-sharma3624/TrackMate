@@ -17,11 +17,18 @@ fun LayoutStructure(
     topBarHeading: String,
     isBackButtonRequired: Boolean,
     bottomBar: @Composable () -> Unit = {},
-    content: @Composable (padding: PaddingValues) -> Unit
+    content: @Composable (padding: PaddingValues) -> Unit,
+    topBarButtonAction: () -> Unit
 ){
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        topBar = {TopBar(heading = topBarHeading, isBackButtonRequired = isBackButtonRequired)},
+        topBar = {
+            TopBar(
+                heading = topBarHeading,
+                isBackButtonRequired = isBackButtonRequired,
+                iconButtonAction = topBarButtonAction
+            )
+        },
         bottomBar = bottomBar
     ) { padding ->
 
