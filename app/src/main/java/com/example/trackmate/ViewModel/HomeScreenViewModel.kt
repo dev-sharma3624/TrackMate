@@ -115,6 +115,22 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    fun createHabitForInsertion(habitName: String, hour: Int, min: Int){
+        val str = "%02d:%02d %s"
+        val isAmPm = if(hour <= 12) "AM" else "PM"
+        val hourTimeIn12hrFormat = if(isAmPm == "PM") hour%12 else hour
+
+        val time = String.format(str, hourTimeIn12hrFormat, min, isAmPm)
+
+        val newHabit = Habit(
+            habitName = habitName,
+            timeSet = time,
+            createdOn = dateUtils.getCurrentDateInLong()
+        )
+
+        insertHabit(newHabit)
+    }
+
     fun insertHabit(newHabit: Habit): Boolean{
         var isSuccess = false
         viewModelScope.launch {

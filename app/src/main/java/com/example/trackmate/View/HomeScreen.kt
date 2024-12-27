@@ -1,5 +1,6 @@
 package com.example.trackmate.View
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,20 +33,21 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.trackmate.Data.Habit
+import com.example.trackmate.Data.HabitJournal
 import com.example.trackmate.ProgressScreenHabit
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.HomeScreenViewModel
 import java.util.Calendar
 
 
+val tag = "NAMASTE"
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     screenId: SCREENS
 ){
-    val tag = "NAMASTE"
-
-    Log.d(tag, "Inside Home Screen")
 
     val homeScreenViewModel: HomeScreenViewModel = hiltViewModel()
 
@@ -54,8 +56,6 @@ fun HomeScreen(
     var selectedDate by remember{ mutableLongStateOf(homeScreenViewModel.currentDate) }
 
     var insertDialogController by remember{ mutableStateOf(false) }
-
-    Log.d(tag, "Inside Home screen selected date initialised to: $selectedDate")
 
     LayoutStructure(
         topBarHeading = topBarHeading,
@@ -75,7 +75,6 @@ fun HomeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-                    Log.d(tag, "Value of selectedDate passed to CalendarRow: $selectedDate")
                     CalendarRow(homeScreenViewModel, selectedDate){ date->
                         selectedDate = date
                         homeScreenViewModel.getHabitList(selectedDate)
@@ -89,7 +88,7 @@ fun HomeScreen(
                         viewModel = homeScreenViewModel,
                         onClickHabitCard = {habitId->
                             ProgressScreenHabit.id = habitId
-                            navController.navigate(SCREENS.PROGRESS)
+                            navController.navigate(SCREENS.PROGRESS.value)
                         },
                         onClickCheckBoxToDelete = {habitId->
                             homeScreenViewModel.deleteHabitJournal(
@@ -97,10 +96,14 @@ fun HomeScreen(
                                 date = selectedDate
                             )
                         },
-                        onClickCheckBoxToAdd = {
-                            //todo: when  checkbox is ticked back we need time from between
-                            //todo: which the activity was performed hence we need to create
-                            //todo: a dialog/screen to get that time before creating an entry
+                        onClickCheckBoxToAdd = {habitId->
+                            homeScreenViewModel.insertHabitJournal(
+                                HabitJournal(
+                                    habitId =  habitId,
+                                    doneOn = selectedDate,
+                                    timePeriod = 20.0f
+                                )
+                            )
                         }
                     )
                 }
@@ -108,37 +111,35 @@ fun HomeScreen(
                 if (insertDialogController){
 
                     InsertDialog(
-                        onDismissRequest = { insertDialogController = false },
-                        confirmButton = {habit ->
+                        onDismissRequest = {
                             insertDialogController = false
-                            homeScreenViewModel.insertHabit(habit)
+                        },
+                        confirmButton = {name, time ->
+                            insertDialogController = false
+
+                            homeScreenViewModel.createHabitForInsertion(
+                                habitName = name,
+                                hour = time.hour,
+                                min = time.minute
+                            )
                         }
                     )
 
                 }
-
 
             }
         }
     )
 }
 
-@Preview(showBackground = true)
-@Composable
-fun InsertDialogPreview(){
-    Column(
-        Modifier.fillMaxSize()
-    ) {
-        InsertDialog({},{} )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsertDialog(
     onDismissRequest: () -> Unit,
-    confirmButton: (Habit) -> Unit
+    confirmButton: (String, TimePickerState) -> Unit
 ){
+    val tag = tag + "InsertDialog"
+
     val currentTime = Calendar.getInstance()
     
     var habitNameText by remember{ mutableStateOf("") }
@@ -176,25 +177,7 @@ fun InsertDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(onClick = {
-                        val time = habitTime.hour.toString().apply {
-                            plus(":")
-                            plus(habitTime.minute.toString())
-                            if(currentTime.get(Calendar.AM_PM) == Calendar.AM){
-                                plus(" AM")
-                            }else{
-                                plus(" PM")
-                            }
-                        }
-
-                        val habit = Habit(
-                            habitName =  habitNameText,
-                            createdOn = currentTime.timeInMillis,
-                            timeSet = time
-                        )
-
-                        confirmButton(habit)
-                    }) {
+                    Button(onClick = {confirmButton(habitNameText, habitTime)}) {
                         Text(text = "Submit")
                     }
                 }

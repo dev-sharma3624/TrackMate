@@ -1,7 +1,10 @@
 package com.example.trackmate.Data
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+
+val tagHrp = "NAMASTE"
 
 
 class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
@@ -13,7 +16,9 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
     //To fetch details of a specific habit along with its journal entries
     fun getHabitWithJournalEntries(id: Long): Flow<HabitInfoWithJournal>{
+        Log.d(tagHrp, "Inside habit repo")
         return habitDao.getHabitWithJournalEntries(id)
+//        return habitDao.getHabitInfoWithJournalEntriesManually(id)
     }
 
 

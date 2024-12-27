@@ -1,6 +1,7 @@
 package com.example.trackmate
 
 import android.app.Application
+import android.util.Log
 import androidx.room.Room
 import com.example.trackmate.Data.HabitDao
 import com.example.trackmate.Data.HabitDatabase
@@ -8,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.concurrent.Executors
 import javax.inject.Singleton
 
 @Module
@@ -21,7 +23,9 @@ object Graph {
             context,
             HabitDatabase::class.java,
             "habit.db"
-        ).build()
+        ).setQueryCallback({ sqlQuery, bindArgs ->
+            Log.d("RoomSQL", "Query: $sqlQuery, Args: $bindArgs")
+        }, Executors.newSingleThreadExecutor()).build()
     }
 
     @Provides

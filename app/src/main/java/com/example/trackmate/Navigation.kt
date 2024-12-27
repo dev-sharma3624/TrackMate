@@ -20,7 +20,6 @@ fun Navigation(){
     NavHost(navController = navController, startDestination = SCREENS.HOME.value) {
 
         composable(route = SCREENS.HOME.value){
-            Log.d(tag, "Inside Navigation going to HomeScreen")
             HomeScreen(
                 navController = navController,
                 screenId = SCREENS.HOME
@@ -28,6 +27,7 @@ fun Navigation(){
         }
 
         composable(route = SCREENS.PROGRESS.value){
+            Log.d(tag, "Inside Navigation going to Progress Screen")
             ProgressScreen(
                 navController = navController,
                 screenId = SCREENS.PROGRESS

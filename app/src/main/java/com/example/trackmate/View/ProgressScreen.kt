@@ -1,5 +1,6 @@
 package com.example.trackmate.View
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,9 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.trackmate.Data.Habit
+import com.example.trackmate.Data.HabitInfoWithJournal
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.ProgressViewModel
 
+val tag1 = "NAMASTE"
 
 @Composable
 fun ProgressScreen(
@@ -49,16 +53,38 @@ fun ProgressScreen(
     screenId: SCREENS
 ){
 
+    Log.d(tag1, "Inside Progress Screen")
+
     val progressViewModel: ProgressViewModel = hiltViewModel()
 
+    Log.d(tag1, "viewmodel loaded")
 
     val latestActivityTime by progressViewModel.latestActivityTime.collectAsState()
-    val deviationFromLastWeek by progressViewModel.deviationFromLastWeek.collectAsState()
+    Log.d(tag1, "latest activity time loaded")
+
+
     val graphPlottingValues by progressViewModel.graphPlottingValues.collectAsState()
+    Log.d(tag1, "graph plotting values loaded")
 
-    val maxGraphValue by remember { mutableFloatStateOf(graphPlottingValues.maxOf { it.second }) }
+    val maxGraphValue by remember { mutableFloatStateOf(
+        if(graphPlottingValues.isNotEmpty())
+            graphPlottingValues.maxOf { it.second }
+        else
+            150f
+    ) }
+    Log.d(tag1, "maxGraphValue loaded")
 
-    val journalEntries by progressViewModel.habitInfoWithJournalEntries.collectAsState()
+    val deviationFromLastWeek by progressViewModel.deviationFromLastWeek.collectAsState()
+    Log.d(tag1, "deviation from last week loaded")
+
+
+    val journalEntries by progressViewModel.habitInfoWithJournalEntries.collectAsState(
+        HabitInfoWithJournal(
+            Habit(habitName = "", createdOn = 0L, timeSet = ""),
+            emptyList()
+        )
+    )
+    Log.d(tag1, "journal entries loaded")
 
     /*val habitInfoWithJournal by progressViewModel.habitInfoWithJournalEntries.collectAsState(initial = HabitInfoWithJournal(
         Habit(habitName = "", createdOn = 0L, timeSet = ""),
@@ -66,8 +92,10 @@ fun ProgressScreen(
     )
     )*/
 
+    Log.d(tag1, "value of topBarHeading in Ui: ${journalEntries.habit.habitName}")
+
     LayoutStructure(
-        topBarHeading = progressViewModel.topBarHeading,
+        topBarHeading = journalEntries.habit.habitName,
         bottomBar = {BottomBar(navController = navController, screenId = screenId)},
         isBackButtonRequired = true,
         topBarButtonAction = {},

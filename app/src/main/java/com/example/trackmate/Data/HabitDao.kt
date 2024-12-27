@@ -24,8 +24,6 @@ abstract class HabitDao {
 
 
 
-
-
     //to add new habit to the habit list table
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertHabit(newHabit: Habit)

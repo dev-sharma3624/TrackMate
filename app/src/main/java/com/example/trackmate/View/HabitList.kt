@@ -124,7 +124,7 @@ fun HabitItem(
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
 
                 Text(
-                    text = "",
+                    text = habit.habit.timeSet,
                     fontSize = 12.sp,
                     color = Colors.MODERATE_GREY
                 )

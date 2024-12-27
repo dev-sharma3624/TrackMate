@@ -42,8 +42,6 @@ fun CalendarRow(
         state = lazyRowState
     ){
         items(viewModel.dateList){
-            Log.d(tag, "Boolean value $selectedDate and $it")
-            Log.d(tag, (selectedDate == it).toString())
             DateCard(
                 dateInLong = it,
                 isSelected = selectedDate == it,

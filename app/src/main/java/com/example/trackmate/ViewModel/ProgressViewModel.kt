@@ -1,5 +1,7 @@
 package com.example.trackmate.ViewModel
 
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.trackmate.Data.Habit
@@ -8,11 +10,14 @@ import com.example.trackmate.Data.HabitRepository
 import com.example.trackmate.ProgressScreenHabit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+
+val tagPvm = "NAMASTE"
 
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
@@ -28,9 +33,7 @@ class ProgressViewModel @Inject constructor(
             emptyList()
         )
     )
-    val habitInfoWithJournalEntries: StateFlow<HabitInfoWithJournal> = _habitInfoWithJournalEntries
-
-    lateinit var topBarHeading: String
+    var habitInfoWithJournalEntries: StateFlow<HabitInfoWithJournal> = _habitInfoWithJournalEntries
 
     private var _latestActivityTime = MutableStateFlow("")
     val latestActivityTime: StateFlow<String> = _latestActivityTime
@@ -43,15 +46,25 @@ class ProgressViewModel @Inject constructor(
 
 
     init {
+
         viewModelScope.launch {
-            habitRepository.getHabitWithJournalEntries(habitId).collect{
-                _habitInfoWithJournalEntries.value = it
+            Log.d(tagPvm, "initiating entry fetching")
+            try {
+                habitRepository.getHabitWithJournalEntries(habitId).collect{
+                    Log.d(tagPvm, "collecting habit entries")
+                    Log.d(tagPvm, it.toString())
+                    _habitInfoWithJournalEntries.value = it
+                }
+            }catch (e: NoSuchElementException){
+                Log.d(tagPvm, e.toString())
+                _habitInfoWithJournalEntries.value = HabitInfoWithJournal(
+                    Habit(habitName = "", createdOn = 0L, timeSet = ""),
+                    emptyList()
+                )
             }
+//            _habitInfoWithJournalEntries = habitRepository.getHabitWithJournalEntries(habitId)
 
             withContext(Dispatchers.Default){
-                if(!::topBarHeading.isInitialized){
-                    topBarHeading = habitInfoWithJournalEntries.value.habit.habitName
-                }
 
                 setLatestActivityTime()
 
@@ -165,33 +178,26 @@ class ProgressViewModel @Inject constructor(
         return dateUtils.getDateMonthAndDay(doneOn)
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
