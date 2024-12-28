@@ -46,7 +46,7 @@ import com.example.trackmate.Data.HabitInfoWithJournal
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.ProgressViewModel
 
-val tag1 = "NAMASTE"
+val tagPs = "NAMASTE"
 
 @Composable
 fun ProgressScreen(
@@ -54,18 +54,12 @@ fun ProgressScreen(
     screenId: SCREENS
 ){
 
-    Log.d(tag1, "Inside Progress Screen")
 
     val progressViewModel: ProgressViewModel = hiltViewModel()
 
-    Log.d(tag1, "viewmodel loaded")
-
     val latestActivityTime by progressViewModel.latestActivityTime.collectAsState()
-    Log.d(tag1, "latest activity time loaded")
-
 
     val graphPlottingValues by progressViewModel.graphPlottingValues.collectAsState()
-    Log.d(tag1, "graph plotting values loaded")
 
     val maxGraphValue by remember { mutableFloatStateOf(
         if(graphPlottingValues.isNotEmpty())
@@ -73,10 +67,8 @@ fun ProgressScreen(
         else
             150f
     ) }
-    Log.d(tag1, "maxGraphValue loaded")
 
     val deviationFromLastWeek by progressViewModel.deviationFromLastWeek.collectAsState()
-    Log.d(tag1, "deviation from last week loaded")
 
 
     val journalEntries by progressViewModel.habitInfoWithJournalEntries.collectAsState(
@@ -85,15 +77,13 @@ fun ProgressScreen(
             emptyList()
         )
     )
-    Log.d(tag1, "journal entries loaded")
 
-    /*val habitInfoWithJournal by progressViewModel.habitInfoWithJournalEntries.collectAsState(initial = HabitInfoWithJournal(
-        Habit(habitName = "", createdOn = 0L, timeSet = ""),
-        emptyList()
-    )
-    )*/
+    if(journalEntries.journal.isNotEmpty()){
+        progressViewModel.setLatestActivityTime()
+        progressViewModel.setGraphPlottingValues()
+        progressViewModel.setDeviationFromLastWeek()
+    }
 
-    Log.d(tag1, "value of topBarHeading in Ui: ${journalEntries.habit.habitName}")
 
     LayoutStructure(
         topBarHeading = journalEntries.habit.habitName,
