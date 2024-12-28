@@ -1,7 +1,8 @@
 package com.example.trackmate.View
 
-import android.annotation.SuppressLint
 import android.util.Log
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,14 +10,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.TimePickerColors
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
@@ -26,13 +30,13 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.trackmate.Data.Habit
 import com.example.trackmate.Data.HabitJournal
 import com.example.trackmate.ProgressScreenHabit
 import com.example.trackmate.SCREENS
@@ -57,11 +61,32 @@ fun HomeScreen(
 
     var insertDialogController by remember{ mutableStateOf(false) }
 
+    var topBarIcon by remember { mutableStateOf(Icons.Default.AddCircle) }
+
+    var selectionOperation by remember { mutableStateOf<HomeScreenSelectionOperation?>(null) }
+
+    var dropDownController by remember { mutableStateOf(false) }
+
+
+
     LayoutStructure(
         topBarHeading = topBarHeading,
+        topBarIcon = topBarIcon,
+        dropDownController = dropDownController,
+        changeDropdownState = {dropDownController = !dropDownController},
+        onClickDropdownItem = {selectionOperation = it},
         bottomBar = { BottomBar(navController = navController, screenId = screenId) },
-        isBackButtonRequired = false,
-        topBarButtonAction = {insertDialogController = true},
+        isBackButtonRequired = topBarIcon == Icons.Default.MoreVert,
+        backButtonAction = {
+            selectionOperation = HomeScreenSelectionOperation.UNSELECT_ALL
+        },
+        topBarButtonAction = {
+            if (topBarIcon == Icons.Default.MoreVert){
+                dropDownController = true
+            }else{
+                insertDialogController = true
+            }
+        },
         content = {padding->
 
             Column(
@@ -73,12 +98,16 @@ fun HomeScreen(
                 //Calendar Row
                 Row (
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Absolute.Right
                 ) {
                     CalendarRow(homeScreenViewModel, selectedDate){ date->
-                        selectedDate = date
-                        homeScreenViewModel.getHabitList(selectedDate)
-
+                        Log.d(tag, "Value of expression ${topBarIcon != Icons.Default.MoreVert}")
+                        if(topBarIcon != Icons.Default.MoreVert){
+                            selectedDate = date
+                            homeScreenViewModel.getHabitList(selectedDate)
+                            homeScreenViewModel.topBarHeadingDecider(selectedDate)
+                        }
                     }
                 }
 
@@ -87,24 +116,39 @@ fun HomeScreen(
                     HabitList(
                         viewModel = homeScreenViewModel,
                         onClickHabitCard = {habitId->
-                            ProgressScreenHabit.id = habitId
-                            navController.navigate(SCREENS.PROGRESS.value)
+                            if(topBarIcon != Icons.Default.MoreVert){
+                                ProgressScreenHabit.id = habitId
+                                navController.navigate(SCREENS.PROGRESS.value)
+                            }
                         },
                         onClickCheckBoxToDelete = {habitId->
-                            homeScreenViewModel.deleteHabitJournal(
-                                deletedHabitId = habitId,
-                                date = selectedDate
-                            )
+                            if(topBarIcon != Icons.Default.MoreVert){
+                                homeScreenViewModel.deleteHabitJournal(
+                                    deletedHabitId = habitId,
+                                    date = selectedDate
+                                )
+                            }
                         },
                         onClickCheckBoxToAdd = {habitId->
-                            homeScreenViewModel.insertHabitJournal(
-                                HabitJournal(
-                                    habitId =  habitId,
-                                    doneOn = selectedDate,
-                                    timePeriod = 20.0f
+                            if(topBarIcon != Icons.Default.MoreVert){
+                                homeScreenViewModel.insertHabitJournal(
+                                    HabitJournal(
+                                        habitId =  habitId,
+                                        doneOn = selectedDate,
+                                        timePeriod = 20.0f
+                                    )
                                 )
-                            )
-                        }
+                            }
+                        },
+                        isCardSelectionActivated = {activationStatus->
+                            topBarIcon = if (activationStatus){
+                                Icons.Default.MoreVert
+                            }else{
+                                selectionOperation = null
+                                Icons.Default.AddCircle
+                            }
+                        },
+                        selectionOperation = selectionOperation
                     )
                 }
 
@@ -127,6 +171,12 @@ fun HomeScreen(
 
                 }
 
+                else if (topBarIcon == Icons.Default.MoreVert){
+                    BackHandler {
+                        selectionOperation = HomeScreenSelectionOperation.UNSELECT_ALL
+                    }
+                }
+
             }
         }
     )
@@ -138,7 +188,6 @@ fun InsertDialog(
     onDismissRequest: () -> Unit,
     confirmButton: (String, TimePickerState) -> Unit
 ){
-    val tag = tag + "InsertDialog"
 
     val currentTime = Calendar.getInstance()
     

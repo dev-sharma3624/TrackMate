@@ -9,13 +9,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 
 
 @Composable
 fun LayoutStructure(
     topBarHeading: String,
+    topBarIcon: ImageVector,
+    dropDownController: Boolean,
+    changeDropdownState: () -> Unit,
+    onClickDropdownItem: (HomeScreenSelectionOperation) -> Unit,
     isBackButtonRequired: Boolean,
+    backButtonAction: () -> Unit,
     bottomBar: @Composable () -> Unit = {},
     content: @Composable (padding: PaddingValues) -> Unit,
     topBarButtonAction: () -> Unit
@@ -26,7 +33,12 @@ fun LayoutStructure(
             TopBar(
                 heading = topBarHeading,
                 isBackButtonRequired = isBackButtonRequired,
-                iconButtonAction = topBarButtonAction
+                backButtonAction = {backButtonAction()},
+                iconButtonAction = topBarButtonAction,
+                icon = topBarIcon,
+                dropDownController = dropDownController,
+                changeDropdownState = {changeDropdownState()},
+                onClickDropdownItem = {onClickDropdownItem(it)}
             )
         },
         bottomBar = bottomBar

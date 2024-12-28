@@ -22,6 +22,11 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
     }
 
 
+    suspend fun setHabitForProgressScreen(): Long{
+        return habitDao.setHabitIdForProgressScreen()
+    }
+
+
 
 
 
@@ -67,7 +72,7 @@ class HabitRepository @Inject constructor(private val habitDao: HabitDao) {
 
 
     //to delete a habit from the habitList table
-    suspend fun deleteHabit(deletedHabit: Habit){
+    suspend fun deleteHabit(deletedHabit: Long){
         habitDao.deleteHabit(deletedHabit)
     }
 

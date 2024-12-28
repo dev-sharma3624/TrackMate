@@ -48,15 +48,11 @@ class ProgressViewModel @Inject constructor(
     init {
 
         viewModelScope.launch {
-            Log.d(tagPvm, "initiating entry fetching")
             try {
-                habitRepository.getHabitWithJournalEntries(habitId).collect{
-                    Log.d(tagPvm, "collecting habit entries")
-                    Log.d(tagPvm, it.toString())
+                habitRepository.getHabitWithJournalEntries(habitId!!).collect{
                     _habitInfoWithJournalEntries.value = it
                 }
             }catch (e: NoSuchElementException){
-                Log.d(tagPvm, e.toString())
                 _habitInfoWithJournalEntries.value = HabitInfoWithJournal(
                     Habit(habitName = "", createdOn = 0L, timeSet = ""),
                     emptyList()

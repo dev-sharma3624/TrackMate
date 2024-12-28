@@ -48,8 +48,6 @@ fun CalendarRow(
                 onClickDateCard = {
                     date->
                     onValueChanged(date)
-                    viewModel.topBarHeadingDecider(it)
-                    viewModel.getHabitList(it)
                 },
                 date = viewModel.getDateInString(it),
                 day = viewModel.getDayInString(it)

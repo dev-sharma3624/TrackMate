@@ -93,7 +93,7 @@ fun Content(
     iconId: Int
 ){
     Icon(
-        painter = painterResource(id = R.drawable.outline_home_24),
+        painter = painterResource(id = iconId),
         contentDescription = null,
         tint = iconColor
     )

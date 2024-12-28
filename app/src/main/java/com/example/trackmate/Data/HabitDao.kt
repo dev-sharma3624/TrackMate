@@ -22,11 +22,16 @@ abstract class HabitDao {
     abstract fun getHabitWithJournalEntries(id: Long): Flow<HabitInfoWithJournal>
 
 
-
-
     //to add new habit to the habit list table
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insertHabit(newHabit: Habit)
+
+
+
+    @Query("SELECT id FROM HabitsList ORDER BY id ASC LIMIT 1")
+    abstract suspend fun setHabitIdForProgressScreen(): Long
+
+
 
     //to insert new journal entry in the habit journal : first, every night when the date
     //changes we need to make sure that new entries are added to the journal for the latest date
@@ -50,8 +55,8 @@ abstract class HabitDao {
 
 
     //to delete a habit from the habitList table
-    @Delete
-    abstract suspend fun deleteHabit(deletedHabit: Habit)
+    @Query("Delete from HabitsList where id = :deletedHabit")
+    abstract suspend fun deleteHabit(deletedHabit: Long)
 
 
     //to delete a habit journal from the progress screen

@@ -13,11 +13,14 @@ import com.example.trackmate.Data.HabitInfoWithBooleanValue
 import com.example.trackmate.Data.HabitInfoWithJournal
 import com.example.trackmate.Data.HabitJournal
 import com.example.trackmate.Data.HabitRepository
+import com.example.trackmate.ProgressScreenHabit
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -43,7 +46,6 @@ class HomeScreenViewModel @Inject constructor(
 
     //todo we just need to change dummyHabitList to habitList from source of data
     var habitList: Flow<List<HabitInfoWithBooleanValue>> = emptyFlow()
-    var habitInfoWithJournalEntries: Flow<HabitInfoWithJournal> = emptyFlow()
 
 
     private var _topBarHeading: MutableState<String> = mutableStateOf("Today")
@@ -68,9 +70,7 @@ class HomeScreenViewModel @Inject constructor(
 
 
     init {
-        Log.d(tag, "Inside init bloc of HomeScreenViewModel")
         currentDate = dateUtils.getCurrentDateInLong()
-        Log.d(tag, "current date initialised to $currentDate")
         dateList = dateUtils.createDateList()
         viewModelScope.launch {
             val (startTime, endTime) = dateUtils.getStartAndEndInMillis(currentDate)
@@ -78,6 +78,9 @@ class HomeScreenViewModel @Inject constructor(
                 startTime = startTime,
                 endTime = endTime
             )
+            if(ProgressScreenHabit.id == null){
+                ProgressScreenHabit.id = habitRepository.setHabitForProgressScreen()
+            }
         }
     }
 
@@ -106,12 +109,6 @@ class HomeScreenViewModel @Inject constructor(
         val (startTime, endTime) = dateUtils.getStartAndEndInMillis(date)
         viewModelScope.launch {
             habitList = habitRepository.getHabitInfoWithBooleanValue(startTime = startTime, endTime = endTime)
-        }
-    }
-
-    fun getHabitInfoWithJournal(id: Long){
-        viewModelScope.launch {
-            habitInfoWithJournalEntries = habitRepository.getHabitWithJournalEntries(id)
         }
     }
 
@@ -176,7 +173,7 @@ class HomeScreenViewModel @Inject constructor(
         return isSuccess
     }
 
-    fun deleteHabit(deletedHabit: Habit): Boolean{
+    fun deleteHabit(deletedHabit: Long): Boolean{
         var isSuccess = false
         viewModelScope.launch {
             try {
@@ -205,6 +202,12 @@ class HomeScreenViewModel @Inject constructor(
             }
         }
         return isSuccess
+    }
+
+    fun setHabitIdForProgressScreen(){
+        viewModelScope.launch {
+            ProgressScreenHabit.id = habitRepository.setHabitForProgressScreen()
+        }
     }
 
 }
