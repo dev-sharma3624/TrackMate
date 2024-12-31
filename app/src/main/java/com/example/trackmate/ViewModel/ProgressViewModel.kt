@@ -1,5 +1,6 @@
 package com.example.trackmate.ViewModel
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,13 +9,11 @@ import com.example.trackmate.Data.HabitInfoWithJournal
 import com.example.trackmate.Data.HabitRepository
 import com.example.trackmate.ProgressScreenHabit
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 val tagPvm = "NAMASTE"
@@ -29,20 +28,24 @@ class ProgressViewModel @Inject constructor(
 
     lateinit var habitInfoWithJournalEntries: StateFlow<HabitInfoWithJournal>
 
-    private var _latestActivityTime = MutableStateFlow("")
+    private var _latestActivityTime = MutableStateFlow("00:00")
     val latestActivityTime: StateFlow<String> = _latestActivityTime
 
     private var _deviationFromLastWeek = MutableStateFlow(0f)
     val deviationFromLastWeek : StateFlow<Float> = _deviationFromLastWeek
 
-    private val _graphPlottingValues = MutableStateFlow(emptyList<Pair<Long, Float>>())
-    val graphPlottingValues: StateFlow<List<Pair<Long, Float>>> = _graphPlottingValues
+    private val _graphPlottingValues : MutableStateFlow<List<Pair<Long, Float>>?> =
+        MutableStateFlow(null)
+
+    val graphPlottingValues: StateFlow<List<Pair<Long, Float>>?> =
+        _graphPlottingValues
 
 
     init {
 
         viewModelScope.launch {
-            habitInfoWithJournalEntries = habitRepository.getHabitWithJournalEntries(habitId!!)
+            habitInfoWithJournalEntries = habitRepository
+                .getHabitWithJournalEntries(habitId!!)
                 .stateIn(
                     viewModelScope,
                     SharingStarted.Lazily,
@@ -96,18 +99,19 @@ class ProgressViewModel @Inject constructor(
                 it.doneOn
             }.timePeriod
         }else{
-            0f
-        }).toString()
+            0.0f
+        })
 
         Log.d(tagPvm, "value of time: $time")
 
-        _latestActivityTime.value = formatString(time)
+        _latestActivityTime.value = convertFloatToTimeString(time)
 
         Log.d(tagPvm, "value of formatted time: ${_latestActivityTime.value}")
 
     }
 
     fun setDeviationFromLastWeek(){
+        Log.d(tagPvm, "inside deviation")
         val (startDate, endDate) = dateUtils.getWeekRange(7)
         var startTime = dateUtils.getStartAndEndInMillis(startDate).first
         var endTime = dateUtils.getStartAndEndInMillis(endDate).second
@@ -120,6 +124,7 @@ class ProgressViewModel @Inject constructor(
                 it.doneOn in startTime..endTime
             }.forEach {
                 lastWeekRecord += it.timePeriod
+                Log.d(tagPvm, "last week record: $lastWeekRecord")
             }
 
 
@@ -133,6 +138,7 @@ class ProgressViewModel @Inject constructor(
                 it.doneOn in startTime..endTime
             }.forEach {
                 currentWeekRecord += it.timePeriod
+                Log.d(tagPvm, "current week record: $currentWeekRecord")
             }
 
         _deviationFromLastWeek.value = currentWeekRecord - lastWeekRecord
@@ -140,9 +146,11 @@ class ProgressViewModel @Inject constructor(
     }
 
     fun setGraphPlottingValues(){
+        Log.d(tagPvm, "inside setGraph")
+
         val graphValues = mutableListOf<Pair<Long, Float>>()
 
-        val startTime = dateUtils.getStartAndEndInMillis(dateUtils.getCurrentDateInLong() - 6*24*3600L).first
+        val startTime = dateUtils.getStartAndEndInMillis(dateUtils.getCurrentDateInLong() - 6*24*3600*1000L).first
         val endTime = dateUtils.getStartAndEndInMillis(dateUtils.getCurrentDateInLong()).second
 
         habitInfoWithJournalEntries.value.journal.filter {
@@ -152,7 +160,7 @@ class ProgressViewModel @Inject constructor(
         }
 
         graphValues.sortBy {
-            it.second
+            it.first
         }
 
         _graphPlottingValues.value = graphValues
@@ -167,13 +175,14 @@ class ProgressViewModel @Inject constructor(
     }
 
 
-    fun formatString(str: String): String{
-        str.replace(".", ":").substring(0, 4)
-        if(str.length == 4){
-            return  "0".plus(str)
-        }else{
-            return str
-        }
+    @SuppressLint("DefaultLocale")
+    fun convertFloatToTimeString(num: Float): String{
+        val int = num.toInt()
+        Log.d(tagPvm, "int value: $int")
+        val fraction = ((num % 1) * 100).toInt()
+        Log.d(tagPvm, "fraction value: $fraction")
+        Log.d(tagPvm, "string: ${String.format("%02d:%02d", int, fraction)}")
+        return String.format("%02d:%02d", int, fraction)
     }
 
     fun createTimeStamp(doneOn: Long, timePeriod: Float): String{
@@ -185,7 +194,7 @@ class ProgressViewModel @Inject constructor(
 
         return timeStamp
     }
-    // Sep 9, Thu
+
     fun createDateStamp(doneOn: Long): String{
         return dateUtils.getDateMonthAndDay(doneOn)
     }

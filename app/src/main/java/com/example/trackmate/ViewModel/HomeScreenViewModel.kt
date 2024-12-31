@@ -1,6 +1,7 @@
 package com.example.trackmate.ViewModel
 
 
+import android.annotation.SuppressLint
 import android.icu.util.Calendar
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -112,6 +114,7 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("DefaultLocale")
     fun createHabitForInsertion(habitName: String, hour: Int, min: Int){
         val str = "%02d:%02d %s"
         val isAmPm = if(hour <= 12) "AM" else "PM"

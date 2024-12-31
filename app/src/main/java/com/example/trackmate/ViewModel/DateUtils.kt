@@ -77,9 +77,9 @@ class DateUtils @Inject constructor(){
     fun getWeekRange(diff: Int): Pair<Long, Long>{
         val calendar = Calendar.getInstance().apply {
             timeInMillis = currentTimeInMillis
+            set(Calendar.DAY_OF_WEEK, 1)
             set(Calendar.DAY_OF_MONTH,
                 get(Calendar.DAY_OF_MONTH) - diff)
-            set(Calendar.DAY_OF_WEEK, 1)
         }
 
         val startDate = calendar.timeInMillis

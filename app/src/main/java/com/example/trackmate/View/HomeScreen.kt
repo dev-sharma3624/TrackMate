@@ -42,6 +42,7 @@ import com.example.trackmate.ProgressScreenHabit
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.HomeScreenViewModel
 import java.util.Calendar
+import kotlin.random.Random
 
 
 val tag = "NAMASTE"
@@ -135,7 +136,7 @@ fun HomeScreen(
                                     HabitJournal(
                                         habitId =  habitId,
                                         doneOn = selectedDate,
-                                        timePeriod = 20.0f
+                                        timePeriod = Random.nextInt(30, 50) + Random.nextFloat()
                                     )
                                 )
                             }

@@ -1,5 +1,6 @@
 package com.example.trackmate.View
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,6 +55,7 @@ fun HabitList(
 ){
 
     val habitList = viewModel.habitList.collectAsState(initial = emptyList())
+    Log.d(taghl, "habitList: ${habitList.value}")
 
 //    val habitList by viewModel.dummyHabitList.collectAsState(initial = emptyList())
 
