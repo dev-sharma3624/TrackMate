@@ -1,8 +1,13 @@
 package com.example.trackmate.View
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,9 +40,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.trackmate.Data.HabitJournal
+import com.example.trackmate.MainActivity
 import com.example.trackmate.ProgressScreenHabit
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.HomeScreenViewModel
@@ -68,6 +76,45 @@ fun HomeScreen(
 
     var dropDownController by remember { mutableStateOf(false) }
 
+    var alarmController by remember{ mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+        onResult = {permission->
+
+            if(permission[Manifest.permission.POST_NOTIFICATIONS] == true
+                &&
+                permission[Manifest.permission.USE_EXACT_ALARM] == true
+                ){
+
+                Toast.makeText(context, "Permission granted", Toast.LENGTH_SHORT).show()
+                alarmController = true
+
+            }else{
+
+                val rational = ActivityCompat.shouldShowRequestPermissionRationale(
+                    context as MainActivity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+                ||
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    context,
+                    Manifest.permission.USE_EXACT_ALARM
+                )
+
+                if(rational){
+                    Toast.makeText(context, "Permissions are required", Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(context, "Set permissions manually", Toast.LENGTH_SHORT).show()
+                }
+
+            }
+
+        }
+    )
+
 
 
     LayoutStructure(
@@ -95,6 +142,22 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
+
+                if(
+                    ContextCompat
+                        .checkSelfPermission(
+                            context, Manifest.permission.POST_NOTIFICATIONS) !=
+                    PackageManager.PERMISSION_GRANTED )
+                {
+                    requestPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.POST_NOTIFICATIONS,
+                            Manifest.permission.USE_EXACT_ALARM
+                        )
+                    )
+                }else{
+                    alarmController = true
+                }
 
                 //Calendar Row
                 Row (
@@ -149,7 +212,8 @@ fun HomeScreen(
                                 Icons.Default.AddCircle
                             }
                         },
-                        selectionOperation = selectionOperation
+                        selectionOperation = selectionOperation,
+                        alarmController = alarmController
                     )
                 }
 

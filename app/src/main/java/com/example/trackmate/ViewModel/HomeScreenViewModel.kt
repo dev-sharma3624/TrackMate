@@ -2,6 +2,10 @@ package com.example.trackmate.ViewModel
 
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.icu.util.Calendar
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -25,23 +29,14 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.random.Random
 
+
+val taghvm = "NAMASTE"
+
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val habitRepository: HabitRepository,
     private val dateUtils: DateUtils
 ) : ViewModel() {
-
-    /*
-    TODO
-    1. DONE::ALL FETCH CURRENT DATE PASS IT TO GETHABITLIST FUNCTION INSIDE INIT
-    BLOC TO GET HABIT INFO ON START OF APP
-
-    */
-
-    //    private val dateUtils = DateUtils()
-
-    val tag = "NAMASTE"
-
 
     val dateList: ArrayList<Long>
     val currentDate: Long
@@ -211,6 +206,40 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             ProgressScreenHabit.id = habitRepository.setHabitForProgressScreen()
         }
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    fun setAlarm(context: Context, habit: HabitInfoWithBooleanValue){
+        val alarmIntent = Intent(
+            context,
+            AlarmReceiver::class.java)
+            .putExtra("TITLE", habit.habit.habitName)
+            .putExtra("ID", habit.habit.id)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            habit.habit.id.toInt(),
+            alarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC, getTimeForAlarm(habit.habit.timeSet), pendingIntent)
+    }
+
+    //02:50 PM
+    fun getTimeForAlarm(str: String): Long{
+        val isAmPm = str.substring(6)
+
+        val hour = if(isAmPm == "AM") str.substring(0, 2).toInt() else str.substring(0, 2).toInt() + 12
+        val min = str.substring(3,5).toInt()
+
+        val time = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, hour)
+            set(Calendar.MINUTE, min)
+        }
+
+        return  time.timeInMillis
     }
 
 }

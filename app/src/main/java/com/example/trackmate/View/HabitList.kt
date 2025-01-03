@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,7 +52,8 @@ fun HabitList(
     onClickCheckBoxToDelete: (Long) -> Unit,
     onClickCheckBoxToAdd: (Long) -> Unit,
     isCardSelectionActivated: (Boolean) -> Unit,
-    selectionOperation: HomeScreenSelectionOperation?
+    selectionOperation: HomeScreenSelectionOperation?,
+    alarmController: Boolean
 ){
 
     val habitList = viewModel.habitList.collectAsState(initial = emptyList())
@@ -63,6 +65,14 @@ fun HabitList(
 
     var selectedHabitCards by remember { mutableStateOf(listOf<Long>()) }
     var cardSelectionController by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+
+    if(alarmController){
+        habitList.value.forEach {
+            viewModel.setAlarm(context, it)
+        }
+    }
 
     LazyColumn {
         /*items(habitList.value){
