@@ -43,6 +43,7 @@ import com.example.trackmate.Data.Habit
 import com.example.trackmate.Data.HabitInfoWithJournal
 import com.example.trackmate.SCREENS
 import com.example.trackmate.ViewModel.ProgressViewModel
+import kotlin.math.abs
 
 val tagPs = "NAMASTE"
 
@@ -257,7 +258,7 @@ fun ProgressScreen(
                                             Colors.RED else Colors.DARK_BLUE,
                                         start = Offset(x = size.width,
                                             y = if(it.second > maxGraphValues.first!!) maxGraphValues.first!!
-                                            else it.second
+                                            else it.second * 6f
                                         ),
                                         end = Offset(x = size.width, y = size.height),
                                         strokeWidth = 60f,

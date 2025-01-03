@@ -148,12 +148,18 @@ class ProgressViewModel @Inject constructor(
     fun setGraphPlottingValues(){
         Log.d(tagPvm, "inside setGraph")
 
+        Log.d(tagPvm, "value of list: ${habitInfoWithJournalEntries.value.journal}")
+
         val graphValues = mutableListOf<Pair<Long, Float>>()
 
-        val startTime = dateUtils.getStartAndEndInMillis(dateUtils.getCurrentDateInLong() - 6*24*3600*1000L).first
+        val startTime = dateUtils.getStartAndEndInMillis(dateUtils.getCurrentDateInLong() - 6L*24*3600*1000).first
         val endTime = dateUtils.getStartAndEndInMillis(dateUtils.getCurrentDateInLong()).second
 
         habitInfoWithJournalEntries.value.journal.filter {
+            Log.d(tagPvm, "start: ${dateUtils.getDateMonthAndDay(startTime)}")
+            Log.d(tagPvm, "end: ${dateUtils.getDateMonthAndDay(endTime)}")
+            Log.d(tagPvm, "value: ${dateUtils.getDateMonthAndDay(it.doneOn)}")
+            Log.d(tagPvm, "${it.doneOn in startTime..endTime}")
             it.doneOn in startTime..endTime
         }.forEach {
             graphValues.add(Pair(it.doneOn, it.timePeriod))
